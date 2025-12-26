@@ -201,6 +201,17 @@ export const createCODOrder = async () => {
   return res.json();
 };
 
+// Payment Gateway
+export const createPaymentGatewayOrder = async () => {
+  const res = await fetch(`${API_URL}/payment/create`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Failed to create payment gateway order");
+  return res.json();
+};
+
 
 // ---------------------------------------------------------
 // ORDERS

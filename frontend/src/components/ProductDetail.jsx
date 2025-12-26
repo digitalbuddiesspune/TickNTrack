@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { FaShoppingCart, FaRupeeSign, FaArrowLeft, FaStar, FaRegStar, FaBolt, FaSpinner, FaTimes, FaExpand, FaHeart, FaRegHeart, FaShareAlt } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
@@ -231,11 +232,12 @@ const ProductDetail = () => {
   const sellingPrice = Math.round(product.mrp - (product.mrp * (product.discountPercent || 0) / 100));
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-teal-50 via-white to-gray-50 pb-20 sm:pb-4 relative">
-      {/* Image Modal */}
-      {isImageModalOpen && (
+    <>
+      {/* Image Modal - Rendered using Portal to ensure it's above header */}
+      {isImageModalOpen && createPortal(
         <div 
-          className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4"
+          style={{ zIndex: 99999 }}
           onClick={() => setIsImageModalOpen(false)}
         >
           <div className="relative max-w-4xl w-full max-h-[90vh] flex items-center justify-center">
@@ -259,8 +261,11 @@ const ProductDetail = () => {
               }}
             />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
+
+    <div className="min-h-screen bg-gradient-to-b from-teal-50 via-white to-gray-50 pb-20 sm:pb-4 relative">
 
       <div className="bg-white rounded-2xl shadow-xl border border-teal-100 overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
@@ -641,6 +646,7 @@ const ProductDetail = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

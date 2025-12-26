@@ -514,8 +514,9 @@ const SignIn = () => {
                 </form>
               )}
 
+              {/* COMMENTED OUT: Google Sign-In - uncomment if needed in future */}
               {/* Divider */}
-              <div className="mt-8 mb-6">
+              {/* <div className="mt-8 mb-6">
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-gray-200"></div>
@@ -524,11 +525,12 @@ const SignIn = () => {
                     <span className="px-4 bg-white/80 text-gray-500 font-medium">Or continue with</span>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Social Login */}
-              <div className="space-y-2">
-                <button
+              <div className="space-y-2 mt-3">
+                {/* COMMENTED OUT: Google Sign-In button - uncomment if needed in future */}
+                {/* <button
                   type="button"
                   onClick={() => {
                     let SERVER_BASE = import.meta.env.VITE_BACKEND_BASE || 'http://localhost:5000';
@@ -547,7 +549,7 @@ const SignIn = () => {
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                   </svg>
                   Sign in with Google
-                </button>
+                </button> */}
                 {loginMode === 'email' && (
                   <button
                     type="button"

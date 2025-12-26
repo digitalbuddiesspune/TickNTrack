@@ -2,7 +2,8 @@ import { configDotenv } from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import passport, { setupPassport } from './config/passport.js';
+// COMMENTED OUT: passport imports - uncomment if Google OAuth is re-enabled
+// import passport, { setupPassport } from './config/passport.js';
 
 import authRoutes from './routes/auth.routes.js';
 // OTP routes are already included in auth.routes.js, no need to import separately
@@ -43,11 +44,13 @@ server.use(
 );
 
 server.use(express.json());
+server.use(express.urlencoded({ extended: true })); // For payment gateway callbacks (form data)
 server.use(cookieParser());
 
+// COMMENTED OUT: Initialize Passport for Google OAuth - uncomment if Google OAuth is re-enabled
 // Initialize Passport
-setupPassport();
-server.use(passport.initialize());
+// setupPassport();
+// server.use(passport.initialize());
 
 // Health check
 server.get('/api/health', (req, res) => res.json({ ok: true }));

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
-import passport from '../config/passport.js';
+// COMMENTED OUT: passport import - uncomment if Google OAuth is re-enabled
+// import passport from '../config/passport.js';
 import { signup, signin, forgotPassword, resetPassword } from '../controllers/auth.controller.js';
 import { sendOtp } from '../controllers/sendOtp.js';
 import { verifyOtp } from '../controllers/verifyOtp.js';
@@ -31,8 +32,11 @@ router.get('/me', auth, async (req, res) => {
 
 /* ------------------------------------------
    GOOGLE OAUTH 2.0 FIXED CONFIGURATION
+   COMMENTED OUT: Google OAuth routes - uncomment if needed in future
 --------------------------------------------- */
 
+// COMMENTED OUT: Google OAuth routes - uncomment if needed in future
+/*
 // FRONTEND that user should be redirected to AFTER login  
 // (Production + Local supported)
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
@@ -89,6 +93,7 @@ router.get(
     }
   }
 );
+*/
 
 // Logout
 router.post('/logout', (req, res) => {
