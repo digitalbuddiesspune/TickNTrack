@@ -2,12 +2,42 @@
 // CLEAN + CORRECT BACKEND URL HANDLING
 // ---------------------------------------------------------
 
+import axios from 'axios';
+
 const getBackendUrl = () => {
   return import.meta.env.VITE_BACKEND_URL;
 };
 
-
 const API_URL = `${getBackendUrl()}/api`;
+
+// Create axios instance with default config
+const apiClient = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
+});
+
+// Add request interceptor to include auth token
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = (() => {
+      try {
+        return localStorage.getItem("auth_token");
+      } catch {
+        return null;
+      }
+    })();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 // ---------------------------------------------------------
 // PRODUCTS
@@ -15,8 +45,7 @@ const API_URL = `${getBackendUrl()}/api`;
 
 export const fetchProducts = async (category, subcategory = null) => {
   try {
-    let url = `${API_URL}/products`;
-    const params = new URLSearchParams();
+    const params = {};
     
     // Parent categories that should be treated as category, not subcategory
     const parentCategories = [
@@ -32,37 +61,17 @@ export const fetchProducts = async (category, subcategory = null) => {
     
     // If subcategory is actually a parent category, treat it as category
     if (subcategory && parentCategories.includes(subcategory)) {
-      params.append('category', subcategory);
+      params.category = subcategory;
     } else if (subcategory) {
-      params.append('subcategory', subcategory);
+      params.subcategory = subcategory;
     } else if (category) {
-      params.append('category', category);
+      params.category = category;
     }
     
-    if (params.toString()) {
-      url += `?${params.toString()}`;
-    }
-    
-    console.log("Fetching products from:", url);
+    console.log("Fetching products from:", `${API_URL}/products`, params);
 
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("API Error Response:", {
-        status: response.status,
-        statusText: response.statusText,
-        url: url,
-        body: errorText,
-      });
-      throw new Error(`Failed to fetch products: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const response = await apiClient.get('/products', { params });
+    const data = response.data;
     console.log("Products fetched:", data?.length || 0);
     return Array.isArray(data) ? data : [];
   } catch (error) {
@@ -74,9 +83,8 @@ export const fetchProducts = async (category, subcategory = null) => {
 
 
 export const fetchProductById = async (id) => {
-  const response = await fetch(`${API_URL}/products/${id}`);
-  if (!response.ok) throw new Error("Failed to fetch product details");
-  return response.json();
+  const response = await apiClient.get(`/products/${id}`);
+  return response.data;
 };
 
 // Legacy alias for backward compatibility
@@ -89,32 +97,15 @@ export const fetchSareeById = fetchProductById;
 // ---------------------------------------------------------
 
 export const fetchCategories = async () => {
-  const response = await fetch(`${API_URL}/header`);
-  if (!response.ok) throw new Error("Failed to fetch categories");
-  const data = await response.json();
-  return data.navigation.categories;
+  const response = await apiClient.get('/header');
+  return response.data.navigation.categories;
 };
 
 export const searchProducts = async (query) => {
-  const response = await fetch(`${API_URL}/header/search?query=${encodeURIComponent(query)}`);
-  if (!response.ok) throw new Error("Failed to search products");
-  return response.json();
-};
-
-
-// ---------------------------------------------------------
-// AUTH HEADERS
-// ---------------------------------------------------------
-
-const authHeaders = () => {
-  const token = (() => {
-    try {
-      return localStorage.getItem("auth_token");
-    } catch {
-      return null;
-    }
-  })();
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  const response = await apiClient.get('/header/search', {
+    params: { query }
+  });
+  return response.data;
 };
 
 
@@ -123,44 +114,23 @@ const authHeaders = () => {
 // ---------------------------------------------------------
 
 export const getMyAddress = async () => {
-  const res = await fetch(`${API_URL}/address/me`, {
-    headers: { "Content-Type": "application/json", ...authHeaders() },
-    credentials: "include",
-  });
-  if (!res.ok) throw new Error("Failed to fetch address");
-  return res.json();
+  const response = await apiClient.get('/address/me');
+  return response.data;
 };
 
 export const saveMyAddress = async (payload) => {
-  const res = await fetch(`${API_URL}/address`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...authHeaders() },
-    body: JSON.stringify(payload),
-    credentials: "include",
-  });
-  if (!res.ok) throw new Error("Failed to save address");
-  return res.json();
+  const response = await apiClient.post('/address', payload);
+  return response.data;
 };
 
 export const updateAddressById = async (id, payload) => {
-  const res = await fetch(`${API_URL}/address/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json", ...authHeaders() },
-    body: JSON.stringify(payload),
-    credentials: "include",
-  });
-  if (!res.ok) throw new Error("Failed to update address");
-  return res.json();
+  const response = await apiClient.put(`/address/${id}`, payload);
+  return response.data;
 };
 
 export const deleteAddressById = async (id) => {
-  const res = await fetch(`${API_URL}/address/${id}`, {
-    method: "DELETE",
-    headers: { ...authHeaders() },
-    credentials: "include",
-  });
-  if (!res.ok) throw new Error("Failed to delete address");
-  return res.json();
+  const response = await apiClient.delete(`/address/${id}`);
+  return response.data;
 };
 
 
@@ -169,46 +139,28 @@ export const deleteAddressById = async (id) => {
 // ---------------------------------------------------------
 
 export const createPaymentOrder = async (amount, notes = {}) => {
-  const res = await fetch(`${API_URL}/payment/orders`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...authHeaders() },
-    body: JSON.stringify({ amount, currency: "INR", notes }),
-    credentials: "include",
+  const response = await apiClient.post('/payment/orders', {
+    amount,
+    currency: "INR",
+    notes
   });
-  if (!res.ok) throw new Error("Failed to create payment order");
-  return res.json();
+  return response.data;
 };
 
 export const verifyPayment = async (payload) => {
-  const res = await fetch(`${API_URL}/payment/verify`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...authHeaders() },
-    body: JSON.stringify(payload),
-    credentials: "include",
-  });
-  if (!res.ok) throw new Error("Failed to verify payment");
-  return res.json();
+  const response = await apiClient.post('/payment/verify', payload);
+  return response.data;
 };
 
 export const createCODOrder = async () => {
-  const res = await fetch(`${API_URL}/payment/cod`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...authHeaders() },
-    credentials: "include",
-  });
-  if (!res.ok) throw new Error("Failed to create COD order");
-  return res.json();
+  const response = await apiClient.post('/payment/cod');
+  return response.data;
 };
 
 // Payment Gateway
 export const createPaymentGatewayOrder = async () => {
-  const res = await fetch(`${API_URL}/payment/create`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...authHeaders() },
-    credentials: "include",
-  });
-  if (!res.ok) throw new Error("Failed to create payment gateway order");
-  return res.json();
+  const response = await apiClient.post('/payment/create');
+  return response.data;
 };
 
 
@@ -217,25 +169,18 @@ export const createPaymentGatewayOrder = async () => {
 // ---------------------------------------------------------
 
 export const getMyOrders = async () => {
-  const res = await fetch(`${API_URL}/orders`, {
-    headers: { "Content-Type": "application/json", ...authHeaders() },
-    credentials: "include",
-  });
-  if (!res.ok) throw new Error("Failed to fetch orders");
-  return res.json();
+  const response = await apiClient.get('/orders');
+  return response.data;
 };
 
 export const cancelOrder = async (orderId) => {
-  const res = await fetch(`${API_URL}/orders/${orderId}/cancel`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json", ...authHeaders() },
-    credentials: "include",
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Failed to cancel order");
+  try {
+    const response = await apiClient.put(`/orders/${orderId}/cancel`);
+    return response.data;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || "Failed to cancel order";
+    throw new Error(errorMessage);
   }
-  return res.json();
 };
 
 
@@ -244,54 +189,40 @@ export const cancelOrder = async (orderId) => {
 // ---------------------------------------------------------
 
 export const getWishlist = async () => {
-  const res = await fetch(`${API_URL}/wishlist`, {
-    headers: { "Content-Type": "application/json", ...authHeaders() },
-    credentials: "include",
-  });
-  if (!res.ok) {
+  try {
+    const response = await apiClient.get('/wishlist');
+    return response.data;
+  } catch (error) {
     // Return empty wishlist if not authenticated or error
-    if (res.status === 401) return { items: [] };
+    if (error.response?.status === 401) return { items: [] };
     throw new Error("Failed to fetch wishlist");
   }
-  return res.json();
 };
 
 export const addToWishlist = async (productId) => {
-  const res = await fetch(`${API_URL}/wishlist/add`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...authHeaders() },
-    body: JSON.stringify({ productId }),
-    credentials: "include",
-  });
-  if (!res.ok) {
-    if (res.status === 401) throw new Error("Please login to add to wishlist");
+  try {
+    const response = await apiClient.post('/wishlist/add', { productId });
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 401) throw new Error("Please login to add to wishlist");
     throw new Error("Failed to add to wishlist");
   }
-  return res.json();
 };
 
 export const removeFromWishlist = async (productId) => {
-  const res = await fetch(`${API_URL}/wishlist/remove/${productId}`, {
-    method: "DELETE",
-    headers: { ...authHeaders() },
-    credentials: "include",
-  });
-  if (!res.ok) {
-    if (res.status === 401) throw new Error("Please login");
+  try {
+    const response = await apiClient.delete(`/wishlist/remove/${productId}`);
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 401) throw new Error("Please login");
     throw new Error("Failed to remove from wishlist");
   }
-  return res.json();
 };
 
 export const getWishlistCount = async () => {
   try {
-    const res = await fetch(`${API_URL}/wishlist/count`, {
-      headers: { "Content-Type": "application/json", ...authHeaders() },
-      credentials: "include",
-    });
-    if (!res.ok) return { count: 0 };
-    const data = await res.json();
-    return { count: data.count || 0 };
+    const response = await apiClient.get('/wishlist/count');
+    return { count: response.data.count || 0 };
   } catch {
     return { count: 0 };
   }

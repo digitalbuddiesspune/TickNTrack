@@ -42,7 +42,6 @@ server.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-server.options("*", cors());
 setupPassport(passport);
 server.use(passport.initialize());
 server.use(express.json());
