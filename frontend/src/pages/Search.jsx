@@ -76,16 +76,16 @@ const Search = () => {
   }, [results]);
   
   const priceRanges = [
-    { id: 1, label: '₹300 - ₹1,000', min: 300, max: 1000 },
-    { id: 2, label: '₹1,001 - ₹2,000', min: 1001, max: 2000 },
-    { id: 3, label: '₹2,001 - ₹3,000', min: 2001, max: 3000 },
-    { id: 4, label: '₹3,001 - ₹4,000', min: 3001, max: 4000 },
-    { id: 5, label: '₹4,001 - ₹5,000', min: 4001, max: 5000 },
-    { id: 6, label: '₹5,001 - ₹6,000', min: 5001, max: 6000 },
-    { id: 7, label: '₹6,001 - ₹7,000', min: 6001, max: 7000 },
-    { id: 8, label: '₹7,001 - ₹8,000', min: 7001, max: 8000 },
-    { id: 9, label: '₹8,001 - ₹10,000', min: 8001, max: 10000 },
-    { id: 10, label: 'Above ₹10,000', min: 10001, max: Infinity },
+    { id: 1, label: '₹100 - ₹200', min: 100, max: 200 },
+    { id: 2, label: '₹201 - ₹500', min: 201, max: 500 },
+    { id: 3, label: '₹501 - ₹800', min: 501, max: 800 },
+    { id: 4, label: '₹801 - ₹1,100', min: 801, max: 1100 },
+    { id: 5, label: '₹1,101 - ₹1,400', min: 1101, max: 1400 },
+    { id: 6, label: '₹1,401 - ₹1,700', min: 1401, max: 1700 },
+    { id: 7, label: '₹1,701 - ₹2,000', min: 1701, max: 2000 },
+    { id: 8, label: '₹2,001 - ₹2,300', min: 2001, max: 2300 },
+    { id: 9, label: '₹2,300 - ₹2,500', min: 2300, max: 2500 },
+    { id: 10, label: '₹2,500 and above', min: 2500, max: Infinity },
   ];
   
   // Apply filters to results
