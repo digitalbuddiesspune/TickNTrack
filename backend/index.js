@@ -30,8 +30,10 @@ server.set("trust proxy", 1);
 server.use(
   cors({
     origin: [
+      "https://www.tickntrack.in/",
       "https://www.tickntrack.in",
       "https://tickntrack.in",
+      "https://tickntrack.in/",
       "http://localhost:5173", // dev
       "http://localhost:3000",
     ],
