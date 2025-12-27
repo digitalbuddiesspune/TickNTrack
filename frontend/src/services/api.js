@@ -3,10 +3,9 @@
 // ---------------------------------------------------------
 
 const getBackendUrl = () => {
-  return import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+  return import.meta.env.VITE_BACKEND_URL;
 };
 
-// const API_URL = `${getBackendUrl()}/api`;
 
 const API_URL = `${getBackendUrl()}/api`;
 
