@@ -25,10 +25,7 @@ console.log(
   Boolean(process.env.RAZORPAY_KEY_ID),
   Boolean(process.env.RAZORPAY_KEY_SECRET)
 );
-
 const server = express();
-
-// When behind proxy (Render)
 server.set("trust proxy", 1);
 server.use(
   cors({
