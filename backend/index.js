@@ -30,9 +30,24 @@ const server = express();
 
 // When behind proxy (Render)
 server.set("trust proxy", 1);
-server.use(cors());
+server.use(
+  cors({
+    origin: [
+      "https://www.tickntrack.in",
+      "https://tickntrack.in",
+      "http://localhost:5173", // dev
+      "http://localhost:3000",
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+server.options("*", cors());
+setupPassport(passport);
+server.use(passport.initialize());
 server.use(express.json());
-server.use(express.urlencoded({ extended: true })); 
+server.use(express.urlencoded({ extended: true }));
 server.use(cookieParser());
 server.get("/api/health", (req, res) => res.json({ ok: true }));
 
