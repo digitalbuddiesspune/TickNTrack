@@ -1,7 +1,8 @@
 import { config as dotenvConfig } from 'dotenv';
 dotenvConfig();
 import passport from 'passport';
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+// COMMENTED OUT: Google OAuth - uncomment if needed in future
+// import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import User from '../models/User.js';
 
 let isSetup = false;
@@ -9,6 +10,8 @@ let isSetup = false;
 export function setupPassport() {
   if (isSetup) return;
 
+  // COMMENTED OUT: Google OAuth configuration - uncomment if needed in future
+  /*
   const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
   const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
   const callbackURL = process.env.GOOGLE_CALLBACK_URL || "http://localhost:5000/api/auth/google/callback";
@@ -88,6 +91,7 @@ export function setupPassport() {
       done(err);
     }
   });
+  */
 
   isSetup = true;
 }

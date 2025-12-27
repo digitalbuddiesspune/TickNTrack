@@ -1,7 +1,7 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { getMyAddress, saveMyAddress, deleteAddressById, createPaymentOrder, verifyPayment, createCODOrder } from '../services/api';
+import { getMyAddress, saveMyAddress, deleteAddressById, createPaymentOrder, verifyPayment, createCODOrder, createPaymentGatewayOrder } from '../services/api';
 
 const indianStates = [
   'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
@@ -65,7 +65,7 @@ export default function AddressForm() {
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [showForm, setShowForm] = useState(true);
-  const [paymentMethod, setPaymentMethod] = useState('razorpay'); // 'razorpay' or 'cod'
+  const [paymentMethod, setPaymentMethod] = useState('razorpay'); // 'razorpay', 'cod', or 'paymentgateway'
   const [isProcessingCOD, setIsProcessingCOD] = useState(false);
   const { cart, cartTotal: total, loadCart } = useCart();
 
@@ -118,6 +118,23 @@ export default function AddressForm() {
         console.error('COD order error:', e);
         setIsProcessingCOD(false);
         alert('Failed to place COD order. Please try again.');
+      }
+      return;
+    }
+
+    // Handle Payment Gateway payment
+    if (paymentMethod === 'paymentgateway') {
+      try {
+        const result = await createPaymentGatewayOrder();
+        if (result && result.redirectUrl) {
+          // Redirect to payment gateway
+          window.location.href = result.redirectUrl;
+        } else {
+          alert('Failed to initiate payment. Please try again.');
+        }
+      } catch (e) {
+        console.error('Payment gateway error:', e);
+        alert('Unable to start payment. Please try again.');
       }
       return;
     }

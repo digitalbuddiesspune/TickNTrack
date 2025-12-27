@@ -39,12 +39,17 @@ const OrderSchema = new mongoose.Schema(
     },
     paymentMethod: { 
       type: String, 
-      enum: ['razorpay', 'cod'], 
+      enum: ['razorpay', 'cod', 'paymentgateway'], 
       default: 'razorpay'
     },
     razorpayOrderId: { type: String },
     razorpayPaymentId: { type: String },
     razorpaySignature: { type: String },
+    // Payment Gateway fields
+    pgOrderId: { type: String },
+    pgTransactionId: { type: String },
+    pgResponseCode: { type: String },
+    pgRawResponse: { type: String },
     shippingAddress: { type: ShippingAddressSchema },
   },
   { timestamps: true }

@@ -30,34 +30,16 @@ const server = express();
 
 // When behind proxy (Render)
 server.set("trust proxy", 1);
-
-// CORS configuration
-const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
-// server.use(
-//   cors({
-//     origin: [frontendUrl, 'http://localhost:5173', 'http://localhost:5174'],
-//     credentials: true,
-//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-//   })
-// );
-
 server.use(cors());
 server.use(express.json());
+server.use(express.urlencoded({ extended: true })); 
 server.use(cookieParser());
-
-// Initialize Passport
-setupPassport();
-server.use(passport.initialize());
-
-// Health check
 server.get("/api/health", (req, res) => res.json({ ok: true }));
 
 // Current user route (cookie + JWT)
 server.get("/api/me", cookieJwtAuth, (req, res) => {
   res.json({ user: req.user });
 });
-
 // Routes
 server.use("/api/auth", authRoutes);
 // OTP routes are already included in auth.routes.js
@@ -75,7 +57,6 @@ console.log("Payment routes registered at /api/payment");
 console.log("COD endpoint available at POST /api/payment/cod");
 
 const PORT = process.env.PORT || 5000;
-
 // Connect DB
 await connectDB(process.env.MONGODB_URI || "");
 
