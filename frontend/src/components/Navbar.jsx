@@ -462,7 +462,7 @@ const Navbar = () => {
   }, [activeCategory]);
 
   return (
-    <React.Fragment>
+    <>
       <nav className="relative z-[9999] bg-gradient-to-br from-gray-50 via-teal-50/30 to-cyan-50/30 w-full">
       {/* Top Bar - Dark Grey with Social Icons and Account Links */}
       <div className="bg-gray-800 text-white py-1 w-full">
@@ -1058,7 +1058,7 @@ const Navbar = () => {
         }
       `}</style>
     </nav>
-    </React.Fragment>
+    </>
   );
 };
 
