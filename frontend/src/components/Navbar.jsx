@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
@@ -6,7 +6,6 @@ import { searchProducts } from '../services/api';
 import { placeholders, getProductImage } from '../utils/imagePlaceholder';
 
 const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,7 +28,6 @@ const Navbar = () => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      setIsScrolled(currentScrollY > 20);
       
       // Both mobile and desktop: Show secondary nav at top, hide when scrolling down, show when scrolling up
       if (currentScrollY < 50) {
@@ -118,15 +116,6 @@ const Navbar = () => {
     };
   }, []);
 
-  const handleLogout = () => {
-    // Handle logout logic here
-    // Example: authContext.logout();
-    try {
-      localStorage.removeItem('auth_token');
-    } catch {}
-    setIsAuthenticated(false);
-    navigate('/signin');
-  };
 
   const handleLogin = () => {
     navigate('/signin');
@@ -165,7 +154,7 @@ const Navbar = () => {
         const data = await searchProducts(q);
         const items = data?.results || [];
         setSearchResults(items);
-      } catch (err) {
+      } catch {
         setSearchResults([]);
       } finally {
         setSearchLoading(false);
@@ -258,7 +247,7 @@ const Navbar = () => {
   ];
 
   // Calculate and update dropdown position
-  const calculateDropdownPosition = (categoryName) => {
+  const calculateDropdownPosition = useCallback((categoryName) => {
     const button = categoryButtonRefs.current[categoryName];
     if (!button) {
       // Retry after a short delay if button ref is not ready
@@ -349,7 +338,7 @@ const Navbar = () => {
         }
       });
     }
-  };
+  }, []);
 
   // Handle category click - toggle dropdown
   const handleCategoryClick = (categoryName, event) => {
@@ -431,11 +420,10 @@ const Navbar = () => {
       window.removeEventListener('scroll', updatePosition);
       window.removeEventListener('resize', updatePosition);
     };
-  }, [activeCategory]);
+}, [activeCategory, calculateDropdownPosition]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    if (!activeCategory) return;
 
     const handleClickOutside = (event) => {
       // Check if click is on a category button
@@ -474,7 +462,8 @@ const Navbar = () => {
   }, [activeCategory]);
 
   return (
-    <nav className="relative z-[9999] bg-gradient-to-br from-gray-50 via-teal-50/30 to-cyan-50/30 w-full">
+    <React.Fragment>
+      <nav className="relative z-[9999] bg-gradient-to-br from-gray-50 via-teal-50/30 to-cyan-50/30 w-full">
       {/* Top Bar - Dark Grey with Social Icons and Account Links */}
       <div className="bg-gray-800 text-white py-1 w-full">
         <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-4 2xl:px-6">
@@ -1069,6 +1058,7 @@ const Navbar = () => {
         }
       `}</style>
     </nav>
+    </React.Fragment>
   );
 };
 
