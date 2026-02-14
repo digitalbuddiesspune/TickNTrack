@@ -58,7 +58,7 @@ const TickNTrackSections = () => {
 
     return (
       <section className="relative pt-8 md:pt-12 pb-8 md:pb-12 bg-gradient-to-br from-gray-50 via-teal-50/30 to-cyan-50/30 overflow-hidden w-full">
-        <div className="w-full pl-0 pr-4 sm:pl-2 sm:pr-6 lg:pl-6 lg:pr-8 xl:pl-4 xl:pr-4 2xl:pl-4 2xl:pr-6">
+        <div className="w-full px-4 sm:pl-2 sm:pr-6 lg:pl-6 lg:pr-8 xl:pl-4 xl:pr-4 2xl:pl-4 2xl:pr-6">
           {/* Section Header */}
           <div className="text-center max-w-3xl mx-auto mb-8 md:mb-16">
             <div className="inline-flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-gray-100 rounded-full mb-3 md:mb-4">
@@ -177,9 +177,9 @@ const TickNTrackSections = () => {
 
     return (
       <section className="pt-4 md:pt-6 pb-4 md:pb-6 bg-gradient-to-br from-gray-50 via-teal-50/30 to-cyan-50/30 w-full">
-        <div className="w-full pl-0 pr-4 sm:pl-2 sm:pr-6 lg:pl-6 lg:pr-8 xl:pl-4 xl:pr-4 2xl:pl-4 2xl:pr-6">
-          {/* Category Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+        <div className="w-full px-4 sm:pl-2 sm:pr-6 lg:pl-6 lg:pr-8 xl:pl-4 xl:pr-4 2xl:pl-4 2xl:pr-6">
+          {/* Category Grid - 3 per row on mobile, 3 on md, 6 on lg */}
+          <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
             {categories.map((category, idx) => (
               <div
                 key={idx}
@@ -188,14 +188,14 @@ const TickNTrackSections = () => {
                 onMouseLeave={() => setHoveredCard(null)}
                 className="group flex flex-col items-center cursor-pointer"
               >
-                <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 bg-gray-100">
+                <div className="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 bg-gray-100">
                   <img
                     src={category.image}
                     alt={category.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                 </div>
-                <h3 className="mt-3 text-gray-900 font-medium text-xs sm:text-sm md:text-base text-center uppercase">
+                <h3 className="mt-2 sm:mt-3 text-gray-900 font-medium text-[10px] sm:text-sm md:text-base text-center uppercase leading-tight">
                   {category.name}
                 </h3>
               </div>
@@ -276,7 +276,7 @@ const TickNTrackSections = () => {
 
     return (
       <section className="pt-2 md:pt-4 pb-24 bg-gradient-to-br from-gray-50 via-teal-50/30 to-cyan-50/30 w-full">
-        <div className="w-full pl-0 pr-4 sm:pl-2 sm:pr-6 lg:pl-6 lg:pr-8 xl:pl-4 xl:pr-4 2xl:pl-4 2xl:pr-6">
+        <div className="w-full px-4 sm:pl-2 sm:pr-6 lg:pl-6 lg:pr-8 xl:pl-4 xl:pr-4 2xl:pl-4 2xl:pr-6">
           {/* Stats Bar */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
             {stats.map((stat, idx) => (
