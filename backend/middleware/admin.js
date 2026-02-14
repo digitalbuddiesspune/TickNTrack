@@ -8,6 +8,7 @@ export default async function adminOnly(req, res, next) {
     if (!user || !user.isAdmin) return res.status(403).json({ message: 'Forbidden' });
     next();
   } catch (e) {
-    return res.status(500).json({ message: 'Authorization failed' });
+    console.error('adminOnly middleware error:', e);
+    return res.status(500).json({ message: 'Authorization failed', error: e.message });
   }
 }

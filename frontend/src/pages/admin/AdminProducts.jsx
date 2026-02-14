@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { api } from '../../utils/api';
-import { FiEdit, FiTrash2, FiX } from 'react-icons/fi';
+import { FiEdit, FiTrash2, FiX, FiPlus } from 'react-icons/fi';
 
 const AdminProducts = () => {
   const [form, setForm] = useState({
@@ -24,6 +24,7 @@ const AdminProducts = () => {
     price: ''
   });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [toast, setToast] = useState({ show: false, text: '', type: 'success' });
 
   const load = async () => {
@@ -69,6 +70,7 @@ const AdminProducts = () => {
       await api.admin.createProduct(payload);
       setToast({ show: true, text: 'Product created', type: 'success' });
       setForm({ title: '', mrp: '', discountPercent: 0, description: '', category: '', images: { image1: '' }, product_info: { brand: '', manufacturer: '', SareeLength: '', SareeMaterial: '', SareeColor: '', IncludedComponents: '' } });
+      setIsCreateModalOpen(false);
       await load();
     } catch (e2) {
       setError(e2.message || 'Failed to create product');
@@ -165,69 +167,57 @@ const AdminProducts = () => {
   useEffect(() => { setPage(1); }, [query, pageSize]);
 
   return (
-    <div className="max-w-7xl mx-auto p-4">
+    <div className="max-w-7xl mx-auto">
       {toast.show && (
-        <div className={`${toast.type==='error' ? 'bg-rose-600' : 'bg-amber-600'} fixed bottom-4 right-4 z-50 text-white px-4 py-2 rounded shadow-lg`}>{toast.text}</div>
+        <div className={`fixed bottom-6 right-6 z-50 text-white px-4 py-3 rounded-xl shadow-lg text-sm font-medium ${toast.type === 'error' ? 'bg-red-500' : 'bg-teal-600'}`}>{toast.text}</div>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-10 gap-6">
-        <div className="bg-white border rounded-xl shadow-sm ring-1 ring-rose-50 md:sticky md:top-24 md:self-start md:col-span-3">
-          <div className="px-4 py-3 border-b font-semibold">Create Product</div>
-          <form onSubmit={submit} className="p-4 space-y-3">
-            {error && <div className="text-red-600">{error}</div>}
-            <input name="title" value={form.title} onChange={onChange} placeholder="Title" className="w-full border rounded px-3 py-2" required />
-            <input name="mrp" type="number" value={form.mrp} onChange={onChange} placeholder="MRP" className="w-full border rounded px-3 py-2" required />
-            <input name="discountPercent" type="number" value={form.discountPercent} onChange={onChange} placeholder="Discount %" className="w-full border rounded px-3 py-2" />
-            <input name="category" value={form.category} onChange={onChange} placeholder="Category" className="w-full border rounded px-3 py-2" required />
-            <textarea name="description" value={form.description} onChange={onChange} placeholder="Description" className="w-full border rounded px-3 py-2" rows="3" />
-            <div className="grid grid-cols-1 gap-2">
-              <input value={form.images.image1} onChange={onChangeNested('images','image1')} placeholder="Image URL" className="w-full border rounded px-3 py-2" required />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-              <input value={form.product_info.brand} onChange={onChangeNested('product_info','brand')} placeholder="Brand" className="w-full border rounded px-3 py-2" />
-              <input value={form.product_info.manufacturer} onChange={onChangeNested('product_info','manufacturer')} placeholder="Manufacturer" className="w-full border rounded px-3 py-2" />
-              <input value={form.product_info.SareeMaterial} onChange={onChangeNested('product_info','SareeMaterial')} placeholder="Material" className="w-full border rounded px-3 py-2" />
-              <input value={form.product_info.SareeColor} onChange={onChangeNested('product_info','SareeColor')} placeholder="Color" className="w-full border rounded px-3 py-2" />
-              <input value={form.product_info.SareeLength} onChange={onChangeNested('product_info','SareeLength')} placeholder="Length" className="w-full border rounded px-3 py-2" />
-              <input value={form.product_info.IncludedComponents} onChange={onChangeNested('product_info','IncludedComponents')} placeholder="Included" className="w-full border rounded px-3 py-2" />
-            </div>
-            <button type="submit" disabled={saving} className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded">{saving ? 'Saving...' : 'Create Product'}</button>
-          </form>
-        </div>
-
-        <div className="bg-white border rounded-xl shadow-sm ring-1 ring-rose-50 md:h-[calc(100vh-8rem)] md:flex md:flex-col md:overflow-y-auto md:col-span-7">
-          <div className="px-4 py-3 border-b font-semibold">Products</div>
-          <div className="p-4 md:flex md:flex-col md:h-full">
-            <div className="md:sticky md:top-0 md:z-10 md:bg-white pb-3 pt-1 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between md:border-b">
-              <input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="Search by title or category" className="w-full sm:max-w-xs border rounded px-3 py-2" />
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+          <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <h2 className="font-semibold text-slate-800">Products</h2>
+            <button
+              type="button"
+              onClick={() => { setError(''); setIsCreateModalOpen(true); }}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-white bg-teal-600 hover:bg-teal-700 shadow-sm"
+            >
+              <FiPlus className="w-5 h-5" />
+              Create Product
+            </button>
+          </div>
+          <div className="p-4 flex flex-col flex-1 min-h-0">
+            <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between pb-4 border-b border-slate-100">
+              <input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="Search by title or category" className="w-full sm:max-w-xs border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 outline-none" />
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">Rows</span>
-                <select className="border rounded px-2 py-1" value={pageSize} onChange={(e)=>setPageSize(Number(e.target.value))}>
+                <span className="text-sm text-slate-600">Rows</span>
+                <select className="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 outline-none" value={pageSize} onChange={(e)=>setPageSize(Number(e.target.value))}>
                   <option value={5}>5</option>
                   <option value={10}>10</option>
                   <option value={20}>20</option>
                 </select>
               </div>
             </div>
-            <div>
+            <div className="flex-1 min-h-0 overflow-auto">
             {loading ? (
-              <div className="p-4">Loading...</div>
+              <div className="p-12 text-center">
+                <div className="inline-block w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+                <p className="mt-3 text-slate-600 text-sm">Loading products...</p>
+              </div>
             ) : (
               <>
-                <div className="sm:hidden divide-y">
+                <div className="sm:hidden divide-y divide-slate-100">
                   {pageItems.map((p) => (
-                    <div key={p._id} className="p-3 flex gap-3">
-                      <img src={p?.images?.image1} alt="" className="w-16 h-16 object-cover rounded" />
+                    <div key={p._id} className="p-4 flex gap-4">
+                      <img src={p?.images?.image1} alt="" className="w-16 h-16 object-cover rounded-xl flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <div className="text-xs text-gray-500">{p.category || 'Uncategorized'}</div>
-                        <div className="font-medium line-clamp-2">{p.title}</div>
-                        <div className="mt-1 text-sm text-gray-700 flex items-center gap-2 flex-wrap">
-                          <span>₹{priceFor(p).toLocaleString('en-IN')}</span>
-                          <span className="text-gray-400 line-through">₹{(p.mrp || 0).toLocaleString('en-IN')}</span>
-                          <span className="px-2 py-0.5 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">{p.discountPercent || 0}% off</span>
+                        <div className="text-xs text-slate-500">{p.category || 'Uncategorized'}</div>
+                        <div className="font-medium text-slate-800 line-clamp-2">{p.title}</div>
+                        <div className="mt-1 text-sm flex items-center gap-2 flex-wrap">
+                          <span className="font-medium">₹{priceFor(p).toLocaleString('en-IN')}</span>
+                          <span className="text-slate-400 line-through">₹{(p.mrp || 0).toLocaleString('en-IN')}</span>
+                          <span className="px-2 py-0.5 rounded-lg text-xs font-medium bg-teal-100 text-teal-800 border border-teal-200">{p.discountPercent || 0}% off</span>
                         </div>
-                        <div className="mt-2 flex gap-2">
-                          <button onClick={() => openEditModal(p)} className="px-2 py-1 text-rose-700 border border-rose-200 rounded">Edit</button>
-                          <button onClick={() => remove(p._id)} className="px-2 py-1 text-white bg-rose-600 rounded">Delete</button>
+                        <div className="mt-3 flex gap-2">
+                          <button onClick={() => openEditModal(p)} className="px-3 py-1.5 text-teal-700 border border-teal-200 rounded-lg text-sm font-medium hover:bg-teal-50">Edit</button>
+                          <button onClick={() => remove(p._id)} className="px-3 py-1.5 text-white bg-red-500 rounded-lg text-sm font-medium hover:bg-red-600">Delete</button>
                         </div>
                       </div>
                     </div>
@@ -235,136 +225,110 @@ const AdminProducts = () => {
                 </div>
                 <div className="hidden sm:block overflow-x-auto">
                   <table className="min-w-full text-sm">
-                  <thead className="bg-rose-50/60 text-rose-700">
-                    <tr className="text-left border-b border-rose-100">
-                      <th className="p-2">Image</th>
-                      <th className="p-2">Title</th>
-                      <th className="p-2 whitespace-nowrap">Price</th>
-                      <th className="p-2 hidden md:table-cell whitespace-nowrap">MRP</th>
-                      <th className="p-2 hidden md:table-cell">Discount</th>
-                      <th className="p-2">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pageItems.map((p) => (
-                      <tr key={p._id} className="border-b hover:bg-rose-50/40">
-                        <td className="p-2"><img src={p?.images?.image1} alt="" className="w-12 h-12 object-cover rounded" /></td>
-                        <td className="p-2 max-w-[320px]"><div className="truncate">{p.title}</div></td>
-                        <td className="p-2 whitespace-nowrap">₹{priceFor(p).toLocaleString('en-IN')}</td>
-                        <td className="p-2 hidden md:table-cell whitespace-nowrap">₹{(p.mrp || 0).toLocaleString('en-IN')}</td>
-                        <td className="p-2 hidden md:table-cell">{p.discountPercent || 0}%</td>
-                        <td className="p-2">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <button
-                              onClick={() => openEditModal(p)}
-                              className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-full"
-                              title="Edit"
-                            >
-                              <FiEdit className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => remove(p._id)}
-                              className="p-1.5 text-rose-700 hover:bg-rose-50 rounded-full"
-                              title="Delete"
-                            >
-                              <FiTrash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
+                    <thead>
+                      <tr className="text-left text-slate-600 bg-slate-50/80">
+                        <th className="px-4 py-3 font-medium">Image</th>
+                        <th className="px-4 py-3 font-medium">Title</th>
+                        <th className="px-4 py-3 font-medium whitespace-nowrap">Price</th>
+                        <th className="px-4 py-3 font-medium hidden md:table-cell whitespace-nowrap">MRP</th>
+                        <th className="px-4 py-3 font-medium hidden md:table-cell">Discount</th>
+                        <th className="px-4 py-3 font-medium">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="flex items-center justify-between mt-3 md:sticky md:bottom-0 md:bg-white md:-mx-4 md:px-4 md:py-2 md:border-t">
-                  <div className="text-sm text-gray-600">Page {page} of {totalPages}</div>
-                  <div className="flex gap-2">
-                    <button disabled={page<=1} onClick={()=>setPage(p=>Math.max(1,p-1))} className={`px-3 py-1 rounded border ${page<=1? 'text-gray-400 bg-gray-50' : 'hover:bg-gray-50'}`}>Prev</button>
-                    <button disabled={page>=totalPages} onClick={()=>setPage(p=>Math.min(totalPages,p+1))} className={`px-3 py-1 rounded border ${page>=totalPages? 'text-gray-400 bg-gray-50' : 'hover:bg-gray-50'}`}>Next</button>
-                  </div>
+                    </thead>
+                    <tbody>
+                      {pageItems.map((p) => (
+                        <tr key={p._id} className="border-t border-slate-100 hover:bg-slate-50/50">
+                          <td className="px-4 py-3"><img src={p?.images?.image1} alt="" className="w-12 h-12 object-cover rounded-lg" /></td>
+                          <td className="px-4 py-3 max-w-[280px]"><div className="truncate text-slate-800">{p.title}</div></td>
+                          <td className="px-4 py-3 font-medium whitespace-nowrap">₹{priceFor(p).toLocaleString('en-IN')}</td>
+                          <td className="px-4 py-3 hidden md:table-cell whitespace-nowrap text-slate-600">₹{(p.mrp || 0).toLocaleString('en-IN')}</td>
+                          <td className="px-4 py-3 hidden md:table-cell">{p.discountPercent || 0}%</td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-2">
+                              <button onClick={() => openEditModal(p)} className="p-2 text-teal-600 hover:bg-teal-50 rounded-lg" title="Edit"><FiEdit className="w-4 h-4" /></button>
+                              <button onClick={() => remove(p._id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg" title="Delete"><FiTrash2 className="w-4 h-4" /></button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-                </div>
-                <div className="sm:hidden flex items-center justify-between mt-3">
-                  <div className="text-sm text-gray-600">Page {page} of {totalPages}</div>
+                <div className="flex items-center justify-between py-4 border-t border-slate-100 mt-2">
+                  <p className="text-sm text-slate-600">Page {page} of {totalPages}</p>
                   <div className="flex gap-2">
-                    <button disabled={page<=1} onClick={()=>setPage(p=>Math.max(1,p-1))} className={`px-3 py-1 rounded border ${page<=1? 'text-gray-400 bg-gray-50' : 'hover:bg-gray-50'}`}>Prev</button>
-                    <button disabled={page>=totalPages} onClick={()=>setPage(p=>Math.min(totalPages,p+1))} className={`px-3 py-1 rounded border ${page>=totalPages? 'text-gray-400 bg-gray-50' : 'hover:bg-gray-50'}`}>Next</button>
+                    <button disabled={page<=1} onClick={()=>setPage(p=>Math.max(1,p-1))} className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-medium disabled:opacity-50 hover:bg-slate-50">Prev</button>
+                    <button disabled={page>=totalPages} onClick={()=>setPage(p=>Math.min(totalPages,p+1))} className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-medium disabled:opacity-50 hover:bg-slate-50">Next</button>
                   </div>
                 </div>
               </>
             )}
             </div>
           </div>
-        </div>
       </div>
 
-      {/* Edit Product Modal */}
-      {isEditModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg w-full max-w-md">
-            <div className="flex justify-between items-center border-b p-4">
-              <h3 className="text-lg font-medium">Edit Product</h3>
-              <button onClick={closeEditModal} className="text-gray-500 hover:text-gray-700">
+      {/* Create Product Modal */}
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl my-8">
+            <div className="flex justify-between items-center px-5 py-4 border-b border-slate-100">
+              <h3 className="text-lg font-semibold text-slate-800">Create Product</h3>
+              <button type="button" onClick={() => { setIsCreateModalOpen(false); setError(''); }} className="p-2 rounded-lg text-slate-500 hover:bg-slate-100">
                 <FiX className="w-5 h-5" />
               </button>
             </div>
-            
-            <form onSubmit={handleUpdateProduct} className="p-4 space-y-4">
-              {error && <div className="text-red-600 text-sm">{error}</div>}
-              
+            <form onSubmit={submit} className="p-5 space-y-3 max-h-[70vh] overflow-y-auto">
+              {error && <div className="text-red-600 text-sm font-medium">{error}</div>}
+              <input name="title" value={form.title} onChange={onChange} placeholder="Title" className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none" required />
+              <input name="mrp" type="number" value={form.mrp} onChange={onChange} placeholder="MRP" className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 outline-none" required />
+              <input name="discountPercent" type="number" value={form.discountPercent} onChange={onChange} placeholder="Discount %" className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 outline-none" />
+              <input name="category" value={form.category} onChange={onChange} placeholder="Category" className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 outline-none" required />
+              <textarea name="description" value={form.description} onChange={onChange} placeholder="Description" className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 outline-none resize-none" rows="2" />
+              <input value={form.images.image1} onChange={onChangeNested('images','image1')} placeholder="Image URL" className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 outline-none" required />
+              <div className="grid grid-cols-2 gap-2">
+                <input value={form.product_info.brand} onChange={onChangeNested('product_info','brand')} placeholder="Brand" className="border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
+                <input value={form.product_info.manufacturer} onChange={onChangeNested('product_info','manufacturer')} placeholder="Manufacturer" className="border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
+                <input value={form.product_info.SareeMaterial} onChange={onChangeNested('product_info','SareeMaterial')} placeholder="Material" className="border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
+                <input value={form.product_info.SareeColor} onChange={onChangeNested('product_info','SareeColor')} placeholder="Color" className="border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
+                <input value={form.product_info.SareeLength} onChange={onChangeNested('product_info','SareeLength')} placeholder="Length" className="border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
+                <input value={form.product_info.IncludedComponents} onChange={onChangeNested('product_info','IncludedComponents')} placeholder="Included" className="border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-500" />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button type="button" onClick={() => { setIsCreateModalOpen(false); setError(''); }} className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-medium hover:bg-slate-50">Cancel</button>
+                <button type="submit" disabled={saving} className="flex-1 py-2.5 rounded-xl font-medium text-white bg-teal-600 hover:bg-teal-700 disabled:opacity-50">{saving ? 'Saving...' : 'Create Product'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {isEditModalOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-xl">
+            <div className="flex justify-between items-center px-5 py-4 border-b border-slate-100">
+              <h3 className="text-lg font-semibold text-slate-800">Edit Product</h3>
+              <button onClick={closeEditModal} className="p-2 rounded-lg text-slate-500 hover:bg-slate-100">
+                <FiX className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleUpdateProduct} className="p-5 space-y-4">
+              {error && <div className="text-red-600 text-sm font-medium">{error}</div>}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">MRP (₹)</label>
-                <input
-                  type="number"
-                  name="mrp"
-                  value={editForm.mrp}
-                  onChange={handleEditChange}
-                  className="w-full border rounded px-3 py-2"
-                  required
-                  min="1"
-                  step="0.01"
-                />
+                <label className="block text-sm font-medium text-slate-700 mb-1">MRP (₹)</label>
+                <input type="number" name="mrp" value={editForm.mrp} onChange={handleEditChange} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-teal-500 outline-none" required min="1" step="0.01" />
               </div>
-              
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Discount (%):</label>
-                <input
-                  type="number"
-                  name="discountPercent"
-                  value={editForm.discountPercent}
-                  onChange={handleEditChange}
-                  className="w-full border rounded px-3 py-2"
-                  min="0"
-                  max="100"
-                  step="1"
-                />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Discount (%)</label>
+                <input type="number" name="discountPercent" value={editForm.discountPercent} onChange={handleEditChange} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-teal-500 outline-none" min="0" max="100" step="1" />
               </div>
-              
-              <div className="bg-gray-50 p-3 rounded">
-                <div className="text-sm text-gray-600 mb-1">Selling Price:</div>
-                <div className="text-lg font-semibold">
-                  ₹{editForm.price ? editForm.price.toLocaleString('en-IN') : '0.00'}
-                </div>
-                <div className="text-xs text-gray-500 mt-1">
-                  (MRP - {editForm.discountPercent}%)
-                </div>
+              <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                <p className="text-sm text-slate-600">Selling Price</p>
+                <p className="text-xl font-bold text-slate-800">₹{editForm.price ? editForm.price.toLocaleString('en-IN') : '0'}</p>
+                <p className="text-xs text-slate-500 mt-0.5">MRP − {editForm.discountPercent}%</p>
               </div>
-              
-              <div className="flex justify-end space-x-3 pt-2">
-                <button
-                  type="button"
-                  onClick={closeEditModal}
-                  className="px-4 py-2 border rounded text-gray-700 hover:bg-gray-50"
-                  disabled={saving}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-                  disabled={saving}
-                >
-                  {saving ? 'Saving...' : 'Save Changes'}
-                </button>
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={closeEditModal} className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-medium hover:bg-slate-50" disabled={saving}>Cancel</button>
+                <button type="submit" className="px-4 py-2.5 rounded-xl bg-teal-600 text-white font-medium hover:bg-teal-700 disabled:opacity-50" disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
               </div>
             </form>
           </div>

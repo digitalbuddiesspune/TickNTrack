@@ -1,5 +1,6 @@
 import { Product } from '../models/product.js';
 import Order from '../models/Order.js';
+import User from '../models/User.js';
 import { Address } from '../models/Address.js';
 
 export async function createProduct(req, res) {
@@ -113,23 +114,33 @@ export async function adminListOrders(req, res) {
   try {
     const orders = await Order.find({})
       .sort({ createdAt: -1 })
-      .populate('user', 'name email')
+      .populate({ path: 'user', select: 'name email', strictPopulate: false })
       .lean();
 
-    const userIds = Array.from(new Set(orders.map(o => String(o.user?._id)).filter(Boolean)));
+    const ordersList = Array.isArray(orders) ? orders : [];
+    const userIds = Array.from(
+      new Set(ordersList.map((o) => o.user && o.user._id && String(o.user._id)).filter(Boolean))
+    );
     let addrMap = {};
     if (userIds.length > 0) {
-      const addrs = await Address.find({ userId: { $in: userIds } }).lean();
-      addrMap = Object.fromEntries(addrs.map(a => [String(a.userId), a]));
+      try {
+        const addrs = await Address.find({ userId: { $in: userIds } }).lean();
+        addrMap = Object.fromEntries((addrs || []).map((a) => [String(a.userId), a]));
+      } catch (addrErr) {
+        console.error('adminListOrders: Address.find error', addrErr);
+      }
     }
 
-    const enriched = orders.map(o => ({
+    const enriched = ordersList.map((o) => ({
       ...o,
-      address: o.shippingAddress || (o.user?._id ? (addrMap[String(o.user._id)] || null) : null),
+      address:
+        o.shippingAddress ||
+        (o.user && o.user._id ? (addrMap[String(o.user._id)] || null) : null),
     }));
 
     return res.json(enriched);
   } catch (err) {
+    console.error('adminListOrders error:', err);
     return res.status(500).json({ message: 'Failed to list orders', error: err.message });
   }
 }

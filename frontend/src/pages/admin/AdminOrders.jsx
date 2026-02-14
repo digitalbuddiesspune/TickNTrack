@@ -29,27 +29,26 @@ const AdminOrders = () => {
   }, []);
 
   const StatusBadge = ({ paymentStatus }) => {
-    const paymentCls = paymentStatus === 'paid' 
-      ? 'bg-green-100 text-green-700 border border-green-200'
+    const cls = paymentStatus === 'paid'
+      ? 'bg-teal-100 text-teal-800 border-teal-200'
       : paymentStatus === 'failed'
-      ? 'bg-red-100 text-red-700 border border-red-200'
-      : 'bg-gray-100 text-gray-700 border border-gray-200';
-    
+      ? 'bg-red-100 text-red-800 border-red-200'
+      : 'bg-slate-100 text-slate-700 border-slate-200';
     return (
-      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${paymentCls} text-center`}>
+      <span className={`px-2.5 py-1 rounded-lg text-xs font-medium border ${cls}`}>
         {paymentStatus || 'pending'}
       </span>
     );
   };
 
   const renderAddress = (a) => {
-    if (!a) return <span className="text-gray-400">No address</span>;
+    if (!a) return <span className="text-slate-400">No address</span>;
     return (
-      <div className="max-w-xs">
-        <div className="font-medium">{a.fullName}</div>
-        <div className="text-gray-600 text-xs">{a.mobileNumber || a.alternatePhone}</div>
-        <div className="text-gray-700 text-sm line-clamp-2">{a.address}{a.landmark ? `, ${a.landmark}` : ''}</div>
-        <div className="text-gray-500 text-xs">{a.city}, {a.state} - {a.pincode}</div>
+      <div className="max-w-xs text-sm">
+        <div className="font-medium text-slate-800">{a.fullName}</div>
+        <div className="text-slate-500 text-xs">{a.mobileNumber || a.alternatePhone}</div>
+        <div className="text-slate-600 line-clamp-2">{a.address}{a.landmark ? `, ${a.landmark}` : ''}</div>
+        <div className="text-slate-500 text-xs">{a.city}, {a.state} – {a.pincode}</div>
       </div>
     );
   };
@@ -83,7 +82,7 @@ const AdminOrders = () => {
 
   const getTemp = (id, fallback) => (tempStatus[id] ?? fallback ?? 'created');
   const changeTemp = (id, v) => setTempStatus(prev => ({ ...prev, [id]: v }));
- 
+
   const saveStatus = async (id) => {
     const order = orders.find(o => o._id === id);
     const newStatus = getTemp(id, order?.status);
@@ -103,50 +102,69 @@ const AdminOrders = () => {
     }
   };
 
+  const tabs = [
+    { label: 'All', value: 'all' },
+    { label: 'Paid', value: 'paid' },
+    { label: 'Pending', value: 'created' },
+    { label: 'Confirmed', value: 'confirmed' },
+    { label: 'On the way', value: 'on_the_way' },
+    { label: 'Delivered', value: 'delivered' },
+    { label: 'Failed', value: 'failed' },
+  ];
+
   return (
-    <div className="max-w-7xl mx-auto p-4">
+    <div className="max-w-7xl mx-auto">
       {toast.show && (
-        <div className={`${toast.type==='error' ? 'bg-rose-600' : 'bg-amber-600'} fixed bottom-4 right-4 z-50 text-white px-4 py-2 rounded shadow-lg`}>{toast.text}</div>
+        <div className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl shadow-lg text-white text-sm font-medium ${toast.type === 'error' ? 'bg-red-500' : 'bg-teal-600'}`}>
+          {toast.text}
+        </div>
       )}
+
       {loading ? (
-        <div className="p-4">Loading...</div>
+        <div className="rounded-2xl bg-white border border-slate-200 p-12 text-center">
+          <div className="inline-block w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+          <p className="mt-3 text-slate-600">Loading orders...</p>
+        </div>
       ) : error ? (
-        <div className="p-4 text-red-600">{error}</div>
+        <div className="rounded-2xl bg-red-50 border border-red-200 p-6 text-red-700 font-medium">{error}</div>
       ) : (
-        <div className="bg-white border rounded-xl shadow-sm ring-1 ring-rose-50">
-          <div className="px-4 py-3 border-b font-semibold">Orders</div>
-          <div className="p-4 space-y-3">
-            <div className="-mx-1 overflow-x-auto">
-              <div className="flex gap-2 px-1 min-w-max whitespace-nowrap">
-                {[
-                  { label: 'All Orders', value: 'all' },
-                  { label: 'On the way', value: 'on_the_way' },
-                  { label: 'Pending', value: 'created' },
-                  { label: 'Confirmed', value: 'confirmed' },
-                  { label: 'Delivered', value: 'delivered' },
-                  { label: 'Failed', value: 'failed' },
-                  { label: 'Paid', value: 'paid' },
-                ].map(tab => (
-                  <button
-                    key={tab.value}
-                    onClick={() => setStatus(tab.value)}
-                    className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
-                      status === tab.value
-                        ? 'bg-rose-600 text-white border-rose-600'
-                        : 'bg-white text-gray-700 border-gray-200 hover:bg-rose-50'
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50">
+            <h2 className="font-semibold text-slate-800">Orders</h2>
+          </div>
+
+          <div className="p-4 space-y-4">
+            <div className="flex flex-wrap gap-2">
+              {tabs.map(tab => (
+                <button
+                  key={tab.value}
+                  onClick={() => setStatus(tab.value)}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                    status === tab.value
+                      ? 'bg-teal-600 text-white'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-              <input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="Search by customer, email, or order id" className="w-full sm:max-w-sm border rounded px-3 py-2" />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search by customer, email, or order id"
+                className="w-full sm:max-w-sm rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
+              />
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">Rows</span>
-                <select className="border rounded px-2 py-1" value={pageSize} onChange={(e)=>setPageSize(Number(e.target.value))}>
+                <span className="text-sm text-slate-600">Rows</span>
+                <select
+                  className="rounded-xl border border-slate-200 px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+                  value={pageSize}
+                  onChange={(e) => setPageSize(Number(e.target.value))}
+                >
                   <option value={5}>5</option>
                   <option value={10}>10</option>
                   <option value={20}>20</option>
@@ -154,128 +172,117 @@ const AdminOrders = () => {
               </div>
             </div>
           </div>
-          <div className="sm:hidden divide-y">
+
+          {/* Mobile cards */}
+          <div className="sm:hidden divide-y divide-slate-100">
             {pageItems.map((o) => (
-              <div key={o._id} className="p-3 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="font-medium">#{String(o._id).slice(-6)}</div>
-                  <div className="text-sm text-gray-600">₹{Number(o.amount || 0).toLocaleString('en-IN')}</div>
+              <div key={o._id} className="p-4 space-y-3">
+                <div className="flex justify-between items-start">
+                  <span className="font-semibold text-slate-800">#{String(o._id).slice(-6)}</span>
+                  <span className="text-sm font-medium">₹{Number(o.amount || 0).toLocaleString('en-IN')}</span>
                 </div>
-                <div className="text-sm text-gray-700">{o.user?.name || ''}</div>
-                <div className="text-xs text-gray-500">{o.user?.email || ''}</div>
-                <div className="text-xs text-gray-500">{new Date(o.createdAt).toLocaleString()}</div>
-                <div className="grid grid-cols-2 gap-2 mt-2">
+                <div className="text-sm text-slate-600">{o.user?.name || '—'}</div>
+                <div className="text-xs text-slate-500">{o.user?.email || ''}</div>
+                <div className="text-xs text-slate-500">{new Date(o.createdAt).toLocaleString()}</div>
+                <div className="grid grid-cols-2 gap-3 pt-2">
                   <div>
-                    <div className="text-xs text-gray-600 mb-1">Order Status</div>
-                    <div className="flex items-center gap-2">
-                      <select
-                        className="border rounded px-2 py-1 text-sm w-full"
-                        value={getTemp(o._id, o.status)}
-                        onChange={(e)=>changeTemp(o._id, e.target.value)}
-                      >
-                        {statusOptions.map(opt => (
-                          <option key={opt.value} value={opt.value}>{opt.label}</option>
-                        ))}
-                      </select>
-                    </div>
+                    <label className="block text-xs text-slate-500 mb-1">Status</label>
+                    <select
+                      className="w-full rounded-lg border border-slate-200 px-2 py-2 text-sm"
+                      value={getTemp(o._id, o.status)}
+                      onChange={(e) => changeTemp(o._id, e.target.value)}
+                    >
+                      {statusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                    </select>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-600 mb-1">Payment Status</div>
-                    <div className="flex items-center h-[34px]">
-                      <StatusBadge 
-                        paymentStatus={o.status === 'failed' ? 'failed' : o.razorpayPaymentId ? 'paid' : 'pending'}
-                      />
-                    </div>
+                    <label className="block text-xs text-slate-500 mb-1">Payment</label>
+                    <StatusBadge paymentStatus={o.status === 'failed' ? 'failed' : o.razorpayPaymentId ? 'paid' : 'pending'} />
                   </div>
                 </div>
-                <div className="flex justify-end mt-2">
-                  <button
-                    onClick={()=>saveStatus(o._id)}
-                    disabled={updatingId===o._id || String(getTemp(o._id, o.status))===String(o.status)}
-                    className={`px-3 py-1 rounded text-white text-sm ${updatingId===o._id ? 'bg-gray-400' : 'bg-rose-600 hover:bg-rose-700'} disabled:opacity-60`}
-                  >
-                    {updatingId===o._id ? 'Saving...' : 'Save Changes'}
-                  </button>
-                </div>
+                <button
+                  onClick={() => saveStatus(o._id)}
+                  disabled={updatingId === o._id || String(getTemp(o._id, o.status)) === String(o.status)}
+                  className="w-full py-2.5 rounded-xl font-medium text-white bg-teal-600 hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {updatingId === o._id ? 'Saving...' : 'Save'}
+                </button>
               </div>
             ))}
           </div>
+
+          {/* Desktop table */}
           <div className="hidden sm:block overflow-x-auto">
             <table className="min-w-full text-sm">
-              <thead className="bg-rose-50/60 text-rose-700">
-                <tr className="text-left border-b border-rose-100">
-                  <th className="p-2 whitespace-nowrap">Order</th>
-                  <th className="p-2">Customer</th>
-                  <th className="p-2 hidden lg:table-cell">Address</th>
-                  <th className="p-2 hidden md:table-cell">Items</th>
-                  <th className="p-2 whitespace-nowrap">Amount</th>
-                  <th className="p-2">Order Status</th>
-                  <th className="p-2">Payment Status</th>
-                  <th className="p-2">Actions</th>
-                  <th className="p-2 hidden lg:table-cell">Date</th>
+              <thead>
+                <tr className="text-left text-slate-600 bg-slate-50/80">
+                  <th className="px-4 py-3 font-medium">Order</th>
+                  <th className="px-4 py-3 font-medium">Customer</th>
+                  <th className="px-4 py-3 font-medium hidden lg:table-cell">Address</th>
+                  <th className="px-4 py-3 font-medium hidden md:table-cell">Items</th>
+                  <th className="px-4 py-3 font-medium">Amount</th>
+                  <th className="px-4 py-3 font-medium">Status</th>
+                  <th className="px-4 py-3 font-medium">Payment</th>
+                  <th className="px-4 py-3 font-medium">Actions</th>
+                  <th className="px-4 py-3 font-medium hidden lg:table-cell">Date</th>
                 </tr>
               </thead>
               <tbody>
-              {pageItems.map((o) => (
-                <tr key={o._id} className="border-b hover:bg-rose-50/40">
-                  <td className="p-2 whitespace-nowrap">#{String(o._id).slice(-6)}</td>
-                  <td className="p-2 max-w-[220px]">
-                    <div className="truncate">{o.user?.name || ''}</div>
-                    <div className="text-gray-500 text-xs truncate">{o.user?.email || ''}</div>
-                  </td>
-                  <td className="p-2 hidden lg:table-cell max-w-[320px]">
-                    <div className="text-sm text-gray-700 line-clamp-1">{renderAddress(o.address)}</div>
-                  </td>
-                  <td className="p-2 hidden md:table-cell">{o.items?.length || 0}</td>
-                  <td className="p-2 whitespace-nowrap">₹{Number(o.amount || 0).toLocaleString('en-IN')}</td>
-                  <td className="p-2">
-                    <div className="flex items-center gap-2">
+                {pageItems.map((o) => (
+                  <tr key={o._id} className="border-t border-slate-100 hover:bg-slate-50/50">
+                    <td className="px-4 py-3 font-medium text-slate-800">#{String(o._id).slice(-6)}</td>
+                    <td className="px-4 py-3 max-w-[200px]">
+                      <div className="truncate">{o.user?.name || '—'}</div>
+                      <div className="text-slate-500 text-xs truncate">{o.user?.email || ''}</div>
+                    </td>
+                    <td className="px-4 py-3 hidden lg:table-cell max-w-[280px]">{renderAddress(o.address)}</td>
+                    <td className="px-4 py-3 hidden md:table-cell">{o.items?.length || 0}</td>
+                    <td className="px-4 py-3 font-medium">₹{Number(o.amount || 0).toLocaleString('en-IN')}</td>
+                    <td className="px-4 py-3">
                       <select
-                        className="border rounded px-2 py-1 text-sm"
+                        className="rounded-lg border border-slate-200 px-2 py-1.5 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
                         value={getTemp(o._id, o.status)}
-                        onChange={(e)=>changeTemp(o._id, e.target.value)}
+                        onChange={(e) => changeTemp(o._id, e.target.value)}
                       >
-                        {statusOptions.map(opt => (
-                          <option key={opt.value} value={opt.value}>{opt.label}</option>
-                        ))}
+                        {statusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                       </select>
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                        getTemp(o._id, o.status) === 'created' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
-                        getTemp(o._id, o.status) === 'confirmed' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
-                        getTemp(o._id, o.status) === 'on_the_way' ? 'bg-indigo-100 text-indigo-700 border border-indigo-200' :
-                        getTemp(o._id, o.status) === 'delivered' ? 'bg-green-100 text-green-700 border border-green-200' :
-                        getTemp(o._id, o.status) === 'failed' ? 'bg-rose-200 text-rose-800 border border-rose-300' :
-                        'bg-gray-100 text-gray-700 border border-gray-200'
-                      }`}>
-                        {String(getTemp(o._id, o.status) || '').replace(/_/g, ' ')}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="p-2">
-                    <StatusBadge 
-                      paymentStatus={o.status === 'failed' ? 'failed' : o.razorpayPaymentId ? 'paid' : 'pending'}
-                    />
-                  </td>
-                  <td className="p-2">
-                    <button
-                      onClick={()=>saveStatus(o._id)}
-                      disabled={updatingId===o._id || String(getTemp(o._id, o.status))===String(o.status)}
-                      className={`px-3 py-1 rounded text-white ${updatingId===o._id ? 'bg-gray-400' : 'bg-rose-600 hover:bg-rose-700'} disabled:opacity-60`}
-                    >
-                      {updatingId===o._id ? 'Saving...' : 'Save'}
-                    </button>
-                  </td>
-                  <td className="p-2 hidden lg:table-cell whitespace-nowrap">{new Date(o.createdAt).toLocaleString()}</td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-4 py-3">
+                      <StatusBadge paymentStatus={o.status === 'failed' ? 'failed' : o.razorpayPaymentId ? 'paid' : 'pending'} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => saveStatus(o._id)}
+                        disabled={updatingId === o._id || String(getTemp(o._id, o.status)) === String(o.status)}
+                        className="px-3 py-1.5 rounded-lg font-medium text-white bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-xs"
+                      >
+                        {updatingId === o._id ? 'Saving...' : 'Save'}
+                      </button>
+                    </td>
+                    <td className="px-4 py-3 hidden lg:table-cell text-slate-600 whitespace-nowrap">{new Date(o.createdAt).toLocaleString()}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
-          <div className="p-4 flex items-center justify-between">
-            <div className="text-sm text-gray-600">Page {page} of {totalPages}</div>
+
+          <div className="px-4 py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/30">
+            <p className="text-sm text-slate-600">Page {page} of {totalPages}</p>
             <div className="flex gap-2">
-              <button disabled={page<=1} onClick={()=>setPage(p=>Math.max(1,p-1))} className={`px-3 py-1 rounded border ${page<=1? 'text-gray-400 bg-gray-50' : 'hover:bg-gray-50'}`}>Prev</button>
-              <button disabled={page>=totalPages} onClick={()=>setPage(p=>Math.min(totalPages,p+1))} className={`px-3 py-1 rounded border ${page>=totalPages? 'text-gray-400 bg-gray-50' : 'hover:bg-gray-50'}`}>Next</button>
+              <button
+                disabled={page <= 1}
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-100"
+              >
+                Prev
+              </button>
+              <button
+                disabled={page >= totalPages}
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-100"
+              >
+                Next
+              </button>
             </div>
           </div>
         </div>
