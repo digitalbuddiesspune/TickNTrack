@@ -10,12 +10,13 @@ const Layout = () => {
   const [showSecondaryNav, setShowSecondaryNav] = useState(true);
   const lastScrollY = useRef(0);
 
+  const updateHeight = () => {
+    if (headerWrapRef.current) {
+      setHeaderHeight(headerWrapRef.current.offsetHeight);
+    }
+  };
+
   useEffect(() => {
-    const updateHeight = () => {
-      if (headerWrapRef.current) {
-        setHeaderHeight(headerWrapRef.current.offsetHeight);
-      }
-    };
     updateHeight();
     const t = setTimeout(updateHeight, 350);
     window.addEventListener('resize', updateHeight);
@@ -25,8 +26,20 @@ const Layout = () => {
     };
   }, [showSecondaryNav]);
 
+  // Re-measure header when its height changes (e.g. mobile Categories dropdown open/close)
+  useEffect(() => {
+    const el = headerWrapRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      updateHeight();
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   useEffect(() => {
     const handleScroll = () => {
+      if (window.innerWidth < 768) return;
       const y = window.scrollY;
       if (y < 60) {
         setShowSecondaryNav(true);
