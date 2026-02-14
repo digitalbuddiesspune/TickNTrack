@@ -74,15 +74,15 @@ const TickNTrackSections = () => {
           </div>
 
           {/* Collections Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
             {collections.map((collection, idx) => (
               <div
                 key={collection.id}
                 onMouseEnter={() => setHoveredCard(`col-${idx}`)}
                 onMouseLeave={() => setHoveredCard(null)}
-                className="group relative overflow-hidden rounded-xl md:rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500"
+                className="group relative overflow-hidden rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-500"
               >
-                <div className="aspect-[16/10] relative">
+                <div className="aspect-[4/5] relative">
                   {/* Image */}
                   <img
                     src={collection.image}
@@ -94,33 +94,30 @@ const TickNTrackSections = () => {
                   <div className={`absolute inset-0 bg-gradient-to-br ${collection.gradient} mix-blend-multiply`} />
                   
                   {/* Content */}
-                  <div className="absolute inset-0 p-4 sm:p-6 md:p-8 flex flex-col justify-between text-white">
-                    <div className="flex justify-between items-start gap-2">
-                      <span className="px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wide whitespace-nowrap">
+                  <div className="absolute inset-0 p-3 sm:p-4 flex flex-col justify-between text-white">
+                    <div className="flex justify-between items-start gap-1">
+                      <span className="px-2 py-1 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-[8px] sm:text-[10px] font-semibold uppercase tracking-wide whitespace-nowrap">
                         {collection.badge}
                       </span>
-                      <span className="px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-[10px] sm:text-xs md:text-sm font-bold whitespace-nowrap">
-                        {collection.items} Products
+                      <span className="px-2 py-1 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-[8px] sm:text-[10px] font-bold whitespace-nowrap">
+                        {collection.items}
                       </span>
                     </div>
 
                     <div>
-                      <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2 tracking-tight">
+                      <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold mb-1 tracking-tight">
                         {collection.title}
                       </h3>
-                      <p className="text-sm sm:text-base md:text-lg font-medium text-white/90 mb-0.5 sm:mb-1">
+                      <p className="text-[10px] sm:text-xs font-medium text-white/90 mb-2 sm:mb-3 hidden sm:block">
                         {collection.subtitle}
-                      </p>
-                      <p className="text-xs sm:text-sm text-white/80 mb-4 sm:mb-6">
-                        {collection.description}
                       </p>
                       
                       <button 
                         onClick={() => collection.path && navigate(collection.path)}
-                        className={`inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 bg-white text-gray-900 rounded-lg md:rounded-xl text-xs sm:text-sm md:text-base font-semibold hover:bg-teal-500 hover:text-white transition-all duration-300 ${hoveredCard === `col-${idx}` ? 'translate-x-2' : ''}`}
+                        className={`inline-flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-white text-gray-900 rounded-md text-[10px] sm:text-xs font-semibold hover:bg-teal-500 hover:text-white transition-all duration-300 ${hoveredCard === `col-${idx}` ? 'translate-x-1' : ''}`}
                       >
-                        Explore Collection
-                        <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                        Explore
+                        <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                       </button>
                     </div>
                   </div>
@@ -175,8 +172,6 @@ const TickNTrackSections = () => {
       // Men Accessories Subcategories
       { name: "Men Belts", path: "/category/accessories/men-accessories/men-belts", image: "https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765625319/unnamed_yb9rfg.jpg" },
       { name: "Women Handbags", path: "/category/accessories/women-accessories/women-handbags", image: "https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765624892/unnamed_waspa8.jpg" },
-      { name: "Men Goggles", path: "/category/accessories/men-accessories/men-goggles", image: "https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765627211/unnamed_v26uui.jpg" },
-      { name: "Men Wallets", path: "/category/accessories/men-accessories/men-wallets", image: "https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765627384/unnamed_od7plr.jpg" },
       
     ];
 
@@ -184,28 +179,25 @@ const TickNTrackSections = () => {
       <section className="pt-4 md:pt-6 pb-4 md:pb-6 bg-gradient-to-br from-gray-50 via-teal-50/30 to-cyan-50/30 w-full">
         <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-4 2xl:px-6">
           {/* Category Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
             {categories.map((category, idx) => (
               <div
                 key={idx}
                 onClick={() => navigate(category.path)}
                 onMouseEnter={() => setHoveredCard(`cat-${idx}`)}
                 onMouseLeave={() => setHoveredCard(null)}
-                className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer"
+                className="group flex flex-col items-center cursor-pointer"
               >
-                <div className="aspect-square relative bg-gray-100 overflow-hidden">
+                <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 bg-gray-100">
                   <img
                     src={category.image}
                     alt={category.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300" />
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-black/80 via-black/60 to-transparent">
-                  <h3 className="text-white font-medium text-sm md:text-base lg:text-lg text-center uppercase">
-                    {category.name}
-                  </h3>
-                </div>
+                <h3 className="mt-3 text-gray-900 font-medium text-xs sm:text-sm md:text-base text-center uppercase">
+                  {category.name}
+                </h3>
               </div>
             ))}
           </div>
