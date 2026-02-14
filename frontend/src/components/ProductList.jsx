@@ -656,25 +656,21 @@ const ProductList = ({ defaultCategory } = {}) => {
 
   const FilterContent = () => (
     <div className="space-y-0">
-      {/* Sort By Dropdown - Matching image design */}
+      {/* Sort By Dropdown */}
       <div className="mb-4 pb-4 border-b border-gray-200">
-        <div className="bg-white rounded-md border border-gray-200 p-3 relative">
-          <div className="flex items-center">
-            <span className="text-sm font-medium text-gray-700 mr-2">Sort By :</span>
-            <select
-              value={sortBy}
-              onChange={(e) => {
-                setSortBy(e.target.value);
-              }}
-              className="flex-1 text-sm font-medium text-gray-900 bg-transparent border-none outline-none appearance-none cursor-pointer pr-6"
-            >
-              <option value="relevance">Relevance</option>
-              <option value="price-low-high">Price: Low to High</option>
-              <option value="price-high-low">Price: High to Low</option>
-              <option value="newest">Newest Arrivals</option>
-            </select>
-            <FaChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-pink-500 text-xs pointer-events-none" />
-          </div>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-teal-600 mb-2">Sort by</label>
+        <div className="bg-white rounded-xl border border-gray-200 p-3 relative shadow-sm hover:border-teal-200 hover:shadow-md transition-all duration-200 focus-within:ring-2 focus-within:ring-teal-400/50 focus-within:border-teal-400">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="w-full text-sm font-medium text-gray-900 bg-transparent border-none outline-none appearance-none cursor-pointer pr-8 py-0.5 focus:ring-0"
+          >
+            <option value="relevance">Relevance</option>
+            <option value="price-low-high">Price: Low to High</option>
+            <option value="price-high-low">Price: High to Low</option>
+            <option value="newest">Newest Arrivals</option>
+          </select>
+          <FaChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-teal-500 text-xs pointer-events-none" />
         </div>
       </div>
 
@@ -1142,8 +1138,8 @@ const ProductList = ({ defaultCategory } = {}) => {
         </div>
 
         <div ref={filterContainerRef} className="flex gap-6 lg:gap-8 relative filter-sticky-container" style={{ position: 'relative', overflow: 'visible' }}>
-          {/* Desktop Sidebar Filters - Sticky below navbar */}
-          <aside className="hidden lg:block w-72 flex-shrink-0" style={{ alignSelf: 'flex-start', position: 'relative' }}>
+          {/* Desktop Sidebar Filters - Sticky below navbar; z-[100] so sidebar + dropdown stay above page content */}
+          <aside className="hidden lg:block w-72 flex-shrink-0 relative z-[100]" style={{ alignSelf: 'flex-start' }}>
             <div 
               ref={filterSidebarRef}
               className="bg-white rounded-lg shadow-md border border-gray-200 p-5 overflow-y-auto scrollbar-hide filter-sticky-sidebar"
@@ -1151,7 +1147,7 @@ const ProductList = ({ defaultCategory } = {}) => {
                 position: 'sticky',
                 top: `${navbarHeight}px`,
                 maxHeight: `calc(100vh - ${navbarHeight}px)`,
-                zIndex: 40,
+                zIndex: 50,
                 marginTop: 0
               }}
             >
@@ -1159,8 +1155,8 @@ const ProductList = ({ defaultCategory } = {}) => {
             </div>
           </aside>
 
-          {/* Main Content */}
-          <div className="flex-1 min-w-0">
+          {/* Main Content - lower stacking so sidebar stays on top */}
+          <div className="flex-1 min-w-0 relative z-0">
             {/* Mobile Filter Button & Active Filters */}
             <div className="lg:hidden mb-3 space-y-2">
               <button 
