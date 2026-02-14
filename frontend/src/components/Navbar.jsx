@@ -466,7 +466,7 @@ const Navbar = () => {
       <nav className="relative z-[9999] bg-gradient-to-br from-gray-50 via-teal-50/30 to-cyan-50/30 w-full">
       {/* Top Bar - Dark Grey with Social Icons and Account Links */}
       <div className="bg-gray-800 text-white py-1 w-full">
-        <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-4 2xl:px-6">
+        <div className="w-full pl-0 pr-2 sm:pl-1 sm:pr-4 md:pl-4 md:pr-6 lg:pl-6 lg:pr-8 xl:pl-3 xl:pr-4 2xl:pl-4 2xl:pr-6">
           <div className="flex items-center justify-between flex-wrap gap-1 sm:gap-0">
             {/* Social Media Icons - Left */}
             <div className="flex items-center space-x-0.5 sm:space-x-1.5 md:space-x-2">
@@ -545,18 +545,18 @@ const Navbar = () => {
 
       {/* Bottom Bar - White with Logo, Navigation, and Icons */}
       <div className="bg-gradient-to-br from-gray-50 via-teal-50/30 to-cyan-50/30 border-b border-gray-200 w-full">
-        <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-4 2xl:px-6">
+        <div className="w-full pl-0 pr-2 sm:pl-1 sm:pr-4 md:pl-4 md:pr-6 lg:pl-6 lg:pr-8 xl:pl-3 xl:pr-4 2xl:pl-4 2xl:pr-6">
           <div className="flex items-center justify-between h-12 sm:h-14 md:h-16 gap-2">
             {/* Logo/Brand - Left */}
             <Link 
               to="/" 
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="flex-shrink-0 -ml-2 sm:-ml-4 md:-ml-6 lg:-ml-12"
+              className="flex-shrink-0 flex items-center -ml-8 sm:-ml-8 md:-ml-10 lg:-ml-14"
             >
               <img 
                 src="https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765853492/image-removebg-preview_ji9lfq.png"
                 alt="TickNTrack"
-                className="h-20 sm:h-24 md:h-28 lg:h-32 xl:h-36 w-auto object-contain"
+                className="h-28 sm:h-32 md:h-36 lg:h-40 xl:h-44 w-auto object-contain object-left"
               />
             </Link>
 
@@ -804,7 +804,7 @@ const Navbar = () => {
           </div>
 
           {/* Mobile: Horizontal scrollable layout */}
-          <div className="md:hidden py-2.5 px-2 relative">
+          <div className="md:hidden py-2.5 pl-0 pr-2 relative">
             <div 
               className="flex items-center space-x-1.5 overflow-x-auto scrollbar-hide" 
               ref={categoryRef}
