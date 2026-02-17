@@ -223,12 +223,12 @@ const TickNTrackSections = () => {
           <div className="text-center max-w-3xl mx-auto mb-8 md:mb-16">
             <div className="inline-flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-gray-100 rounded-full mb-3 md:mb-4">
               <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-teal-600" />
-              <span className="text-xs md:text-sm font-medium text-gray-700 uppercase tracking-wider">Curated Collections</span>
+              <span className="text-[10px] md:text-xs font-medium text-gray-700 uppercase tracking-wider">Curated Collections</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium text-gray-900 mb-3 md:mb-4 tracking-tight px-2 uppercase">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium text-gray-900 mb-3 md:mb-4 tracking-tight px-2 uppercase">
               Premium Product Categories
             </h2>
-            <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed px-2">
+            <p className="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed px-2">
               Explore our carefully curated collections designed for discerning customers who value quality and style
             </p>
           </div>
