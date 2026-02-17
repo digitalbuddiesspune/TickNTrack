@@ -1,11 +1,108 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Star, TrendingUp, Zap, ChevronRight, ShoppingBag, Award, Shield, Truck, Sparkles, ArrowRight, Clock, Search, User, Phone, Mail } from 'lucide-react';
+import { fetchProducts } from '../services/api';
+import { CATEGORIES } from '../constants/categories';
+import { placeholders, getProductImage } from '../utils/imagePlaceholder';
 
 const TickNTrackSections = () => {
   const navigate = useNavigate();
   const [hoveredCard, setHoveredCard] = useState(null);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [categoryProducts, setCategoryProducts] = useState({});
+  const [loadingTopSelling, setLoadingTopSelling] = useState(true);
+
+  // Load top selling products for each category
+  useEffect(() => {
+    const loadTopSelling = async () => {
+      try {
+        setLoadingTopSelling(true);
+        const productsByCategory = {};
+
+        for (const category of CATEGORIES) {
+          try {
+            // Fetch products from all subcategories of this parent category
+            const allProducts = [];
+            
+            // Try parent category name variations
+            const parentNameVariations = [
+              category.name,
+              category.name.replace("'S", "'s"),
+              category.name.replace("'S", "s"),
+              category.name.toLowerCase(),
+            ];
+            
+            for (const nameVar of parentNameVariations) {
+              try {
+                const parentProducts = await fetchProducts(nameVar, null);
+                if (parentProducts && Array.isArray(parentProducts)) {
+                  allProducts.push(...parentProducts);
+                  // Don't break - try all variations to get maximum products
+                }
+              } catch (e) {
+                // Continue to next variation
+                console.log(`Failed to fetch with variation "${nameVar}":`, e.message);
+              }
+            }
+            
+            // Then fetch from each subcategory
+            for (const subcategory of category.subcategories || []) {
+              try {
+                // Try as subcategory first
+                const subProducts = await fetchProducts(null, subcategory.name);
+                if (subProducts && subProducts.length > 0) {
+                  allProducts.push(...subProducts);
+                } else {
+                  // Try as category if subcategory didn't work
+                  const subAsCat = await fetchProducts(subcategory.name, null);
+                  if (subAsCat && subAsCat.length > 0) {
+                    allProducts.push(...subAsCat);
+                  }
+                }
+              } catch (subErr) {
+                // Continue to next subcategory
+                console.log(`Could not fetch subcategory ${subcategory.name}`);
+              }
+            }
+            
+            // Remove duplicates by _id
+            const uniqueProducts = Array.from(
+              new Map(allProducts.map(p => [p._id || p.id, p])).values()
+            );
+            
+            // Sort: prioritize products with discount, but include ALL products (even without discount)
+            // Show all products from category, not just sale items
+            const topProducts = uniqueProducts
+              .sort((a, b) => {
+                const discountA = a.discountPercent || 0;
+                const discountB = b.discountPercent || 0;
+                // First sort by discount (higher discount first) - but still include products with 0% discount
+                if (discountB !== discountA) return discountB - discountA;
+                // Then by price (lower price first)
+                const priceA = a.price || a.mrp || 0;
+                const priceB = b.price || b.mrp || 0;
+                return priceA - priceB;
+              })
+              .slice(0, 6); // Take top 6, regardless of discount
+
+            productsByCategory[category.name] = topProducts;
+            console.log(`Loaded ${topProducts.length} products for ${category.name} (from ${uniqueProducts.length} total)`);
+          } catch (err) {
+            console.error(`Error loading products for ${category.name}:`, err);
+            productsByCategory[category.name] = [];
+          }
+        }
+
+        setCategoryProducts(productsByCategory);
+      } catch (err) {
+        console.error('Error loading top selling products:', err);
+      } finally {
+        setLoadingTopSelling(false);
+      }
+    };
+
+    loadTopSelling();
+  }, []);
 
   // Premium Collection Categories
   const CollectionShowcase = () => {
@@ -132,7 +229,7 @@ const TickNTrackSections = () => {
 
   // Category Grid Section
   const CategoryGrid = () => {
-    const categories = [
+    const categoriesList = [
       { name: "Women Analog Watches", path: "/category/watches/Women-watches/Women-analog-watches", image: "https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765215874/unnamed_vxpktl.jpg" },
       { name: "Men Caps", path: "/category/accessories/men-accessories/men-caps", image: "https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765627558/unnamed_frs0um.jpg" },
       { name: "Women Digital Watches", path: "/category/watches/Women-watches/Women-digital-watches", image: "https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765215976/unnamed_whrlsk.jpg" },
@@ -174,32 +271,93 @@ const TickNTrackSections = () => {
       { name: "Women Handbags", path: "/category/accessories/women-accessories/women-handbags", image: "https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765624892/unnamed_waspa8.jpg" },
       
     ];
+    
+    // Duplicate categories for seamless infinite scroll
+    const categories = [...categoriesList, ...categoriesList, ...categoriesList];
 
     return (
-      <section className="pt-4 md:pt-6 pb-4 md:pb-6 bg-gradient-to-br from-gray-50 via-teal-50/30 to-cyan-50/30 w-full">
+      <section className="pt-4 md:pt-6 pb-4 md:pb-6 bg-gradient-to-br from-gray-50 via-teal-50/30 to-cyan-50/30 w-full overflow-hidden">
         <div className="w-full px-4 sm:pl-2 sm:pr-6 lg:pl-6 lg:pr-8 xl:pl-4 xl:pr-4 2xl:pl-4 2xl:pr-6">
-          {/* Category Grid - 3 per row on mobile, 3 on md, 6 on lg */}
-          <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
-            {categories.map((category, idx) => (
-              <div
-                key={idx}
-                onClick={() => navigate(category.path)}
-                onMouseEnter={() => setHoveredCard(`cat-${idx}`)}
-                onMouseLeave={() => setHoveredCard(null)}
-                className="group flex flex-col items-center cursor-pointer"
-              >
-                <div className="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 bg-gray-100 aspect-square">
-                  <img
-                    src={category.image}
-                    alt={category.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
+          {/* Two horizontal lines - left and right */}
+          <div className="flex items-center gap-4 mb-4 md:mb-6">
+            <span className="flex-1 h-px bg-gradient-to-r from-transparent via-teal-300/80 to-teal-400/60 min-w-[40px]" aria-hidden />
+            <span className="flex-shrink-0 text-xs sm:text-sm font-semibold text-gray-500 uppercase tracking-widest">Categories</span>
+            <span className="flex-1 h-px bg-gradient-to-l from-transparent via-teal-300/80 to-teal-400/60 min-w-[40px]" aria-hidden />
+          </div>
+
+          {/* Auto-scrolling Category Carousel - optimized for smooth hover */}
+          <div className="relative overflow-hidden pb-2 carousel-container" style={{ pointerEvents: 'none' }}>
+            <style>{`
+              @keyframes scroll-left {
+                0% { transform: translate3d(0, 0, 0); }
+                100% { transform: translate3d(calc(-100% / 3), 0, 0); }
+              }
+              @keyframes scroll-right {
+                0% { transform: translate3d(calc(-100% / 3), 0, 0); }
+                100% { transform: translate3d(0, 0, 0); }
+              }
+              .scroll-left {
+                animation: scroll-left 80s linear infinite;
+                will-change: transform;
+              }
+              .scroll-right {
+                animation: scroll-right 80s linear infinite;
+                will-change: transform;
+              }
+              .carousel-card {
+                will-change: transform;
+                backface-visibility: hidden;
+                transform: translateZ(0);
+              }
+            `}</style>
+            
+            {/* First row - scrolls left */}
+            <div className="flex gap-4 sm:gap-6 md:gap-8 mb-4 scroll-left" style={{ width: 'fit-content' }}>
+              {categories.map((category, idx) => (
+                <div
+                  key={`left-${idx}`}
+                  onClick={() => { navigate(category.path); }}
+                  className="group flex flex-col items-center cursor-pointer flex-shrink-0 w-[100px] sm:w-[120px] md:w-[140px] lg:w-[160px] carousel-card"
+                  style={{ pointerEvents: 'auto' }}
+                >
+                  <div className="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-gray-100 aspect-square">
+                    <img
+                      src={category.image}
+                      alt={category.name}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                  <h3 className="mt-2 sm:mt-3 text-gray-900 font-medium text-[10px] sm:text-sm md:text-base text-center uppercase leading-tight">
+                    {category.name}
+                  </h3>
                 </div>
-                <h3 className="mt-2 sm:mt-3 text-gray-900 font-medium text-[10px] sm:text-sm md:text-base text-center uppercase leading-tight">
-                  {category.name}
-                </h3>
-              </div>
-            ))}
+              ))}
+            </div>
+            
+            {/* Second row - scrolls right */}
+            <div className="flex gap-4 sm:gap-6 md:gap-8 scroll-right" style={{ width: 'fit-content' }}>
+              {categories.map((category, idx) => (
+                <div
+                  key={`right-${idx}`}
+                  onClick={() => { navigate(category.path); }}
+                  className="group flex flex-col items-center cursor-pointer flex-shrink-0 w-[100px] sm:w-[120px] md:w-[140px] lg:w-[160px] carousel-card"
+                  style={{ pointerEvents: 'auto' }}
+                >
+                  <div className="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-gray-100 aspect-square">
+                    <img
+                      src={category.image}
+                      alt={category.name}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                  <h3 className="mt-2 sm:mt-3 text-gray-900 font-medium text-[10px] sm:text-sm md:text-base text-center uppercase leading-tight">
+                    {category.name}
+                  </h3>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Banner Image with Text Overlay */}
@@ -336,10 +494,147 @@ const TickNTrackSections = () => {
     );
   };
 
+  // Top Selling Products Section
+  const TopSellingSection = () => {
+    const calculatePrice = (product) => {
+      if (product.price !== undefined) return product.price;
+      const mrp = product.mrp || 0;
+      const discount = product.discountPercent || 0;
+      return Math.round(mrp - (mrp * discount) / 100);
+    };
+
+    const CategoryProductsSection = ({ category }) => {
+      const products = categoryProducts[category.name] || [];
+      
+      // Always show section - even if no products, show message
+      // This helps debug and shows user that category exists
+
+      return (
+        <section className="py-4 md:py-6 bg-gradient-to-br from-gray-50 via-teal-50/30 to-cyan-50/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Section Header */}
+            <div className="mb-4 md:mb-5">
+              <div className="flex items-center gap-4 mb-4">
+                <span className="flex-1 h-px bg-gradient-to-r from-transparent via-teal-300/80 to-teal-400/60 min-w-[40px]" aria-hidden />
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900 uppercase tracking-tight">
+                  {category.name}
+                </h2>
+                <span className="flex-1 h-px bg-gradient-to-l from-transparent via-teal-300/80 to-teal-400/60 min-w-[40px]" aria-hidden />
+              </div>
+              <p className="text-center text-sm sm:text-base text-gray-600 mt-2">
+                Top Selling Products
+              </p>
+            </div>
+
+            {/* Products Grid */}
+            {loadingTopSelling ? (
+              <>
+                <div className="flex justify-center items-center mb-6">
+                  <div className="w-8 h-8 border-2 border-teal-600 border-t-transparent rounded-full animate-spin" />
+                  <span className="ml-3 text-gray-600">Loading products...</span>
+                </div>
+                {/* Skeleton Placeholder Boxes */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
+                  {[...Array(6)].map((_, idx) => (
+                    <div key={`skeleton-${idx}`} className="bg-white rounded-xl overflow-hidden shadow-md animate-pulse">
+                      <div className="aspect-square bg-gray-200" />
+                      <div className="p-3 sm:p-4">
+                        <div className="h-4 bg-gray-200 rounded mb-2" />
+                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                        <div className="h-5 bg-gray-300 rounded w-1/2" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : products.length === 0 ? (
+              <div className="text-center py-12 text-gray-500">
+                <p>No products available in this category</p>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
+                  {products.map((product) => {
+                    const finalPrice = calculatePrice(product);
+                    const imageUrl = product?.images?.image1 || getProductImage(product?.title || '');
+                    
+                    return (
+                      <div
+                        key={product._id}
+                        onClick={() => navigate(`/product/${product._id}`)}
+                        className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
+                      >
+                        {/* Product Image */}
+                        <div className="relative aspect-square overflow-hidden bg-gray-100">
+                          <img
+                            src={imageUrl}
+                            alt={product.title || 'Product'}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            onError={(e) => {
+                              e.target.src = placeholders.product;
+                            }}
+                          />
+                          {product.discountPercent > 0 && (
+                            <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg shadow-md">
+                              {product.discountPercent}% OFF
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Product Info */}
+                        <div className="p-3 sm:p-4">
+                          <h3 className="text-xs sm:text-sm font-medium text-gray-900 line-clamp-2 mb-2 min-h-[2.5rem]">
+                            {product.title || 'Untitled Product'}
+                          </h3>
+                          
+                          {/* Price */}
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-base sm:text-lg font-bold text-gray-900 flex items-center">
+                              ₹{finalPrice.toLocaleString('en-IN')}
+                            </span>
+                            {product.mrp && product.mrp > finalPrice && (
+                              <span className="text-xs sm:text-sm text-gray-500 line-through">
+                                ₹{product.mrp.toLocaleString('en-IN')}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* View All Button */}
+                <div className="mt-4 md:mt-5 text-center">
+                  <button
+                    onClick={() => navigate(category.path)}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-teal-600 text-white font-medium rounded-xl hover:bg-teal-700 transition-colors shadow-md hover:shadow-lg"
+                  >
+                    View All {category.name}
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </section>
+      );
+    };
+
+    return (
+      <div className="divide-y divide-gray-200/50">
+        {CATEGORIES.map((category) => (
+          <CategoryProductsSection key={category.name} category={category} />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="bg-gradient-to-br from-gray-50 via-teal-50/30 to-cyan-50/30">
       <CollectionShowcase />
       <CategoryGrid />
+      <TopSellingSection />
       <TrustSection />
     </div>
   );

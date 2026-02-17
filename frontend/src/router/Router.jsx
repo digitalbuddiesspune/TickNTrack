@@ -32,6 +32,7 @@ import PrivacyPolicy from '../pages/PrivacyPolicy';
 import TermsAndConditions from '../pages/TermsAndConditions';
 import ShippingPolicy from '../pages/ShippingPolicy';
 import RefundCancellationPolicy from '../pages/RefundCancellationPolicy';
+import TopSellingProducts from '../pages/TopSellingProducts';
 
 const isAuthenticated = () => {
   try {
@@ -117,6 +118,7 @@ const Router = () => {
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
           <Route path="wishlist" element={<Wishlist />} />
+          <Route path="top-selling" element={<TopSellingProducts />} />
           <Route path="privacy" element={<PrivacyPolicy />} />
           <Route path="terms" element={<TermsAndConditions />} />
           <Route path="shipping" element={<ShippingPolicy />} />
