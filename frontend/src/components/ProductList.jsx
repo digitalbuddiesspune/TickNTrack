@@ -54,6 +54,7 @@ const styles = `
   .filter-sticky-sidebar {
     position: -webkit-sticky !important;
     position: sticky !important;
+    align-self: flex-start !important;
   }
 `;
 
@@ -1185,10 +1186,12 @@ const ProductList = ({ defaultCategory } = {}) => {
               className="bg-white rounded-lg shadow-md border border-gray-200 p-5 overflow-y-auto scrollbar-hide filter-sticky-sidebar"
               style={{ 
                 position: 'sticky',
-                top: `${navbarHeight}px`,
-                maxHeight: `calc(100vh - ${navbarHeight}px)`,
+                top: `${navbarHeight + 10}px`,
+                maxHeight: `calc(100vh - ${navbarHeight + 20}px)`,
                 zIndex: 50,
-                marginTop: 0
+                marginTop: 0,
+                alignSelf: 'flex-start',
+                willChange: 'transform'
               }}
             >
               <FilterContent />
