@@ -367,9 +367,37 @@ const ProductList = ({ defaultCategory } = {}) => {
     { id: 10, label: '₹2,500 and above', min: 2500, max: Infinity },
   ];
   
-  // Fetch products
+  // Cache key and duration for category products
+  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
+  
+  // Fetch products with cache
   useEffect(() => {
     const load = async () => {
+      // Create cache key based on category and subcategory
+      const cacheKey = `tickntrack_category_${effectiveCategory || 'all'}_${effectiveSubCategory || 'none'}`;
+      
+      // Check cache first
+      try {
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+          const { data, timestamp } = JSON.parse(cached);
+          const now = Date.now();
+          // Use cache if less than 5 minutes old
+          if (now - timestamp < CACHE_DURATION) {
+            setProducts(Array.isArray(data) ? data : []);
+            setFilteredProducts(Array.isArray(data) ? data : []);
+            setLoading(false);
+            console.log(`Loaded products from cache for ${effectiveCategory}${effectiveSubCategory ? '/' + effectiveSubCategory : ''}`);
+            return; // Don't fetch if cache is valid
+          } else {
+            // Cache expired, remove it
+            localStorage.removeItem(cacheKey);
+          }
+        }
+      } catch (e) {
+        console.log('Cache read error:', e);
+      }
+      
       try {
         setLoading(true);
         setError(null);
@@ -380,8 +408,20 @@ const ProductList = ({ defaultCategory } = {}) => {
         
         // Use subcategory if available, otherwise use category
         const data = await fetchProducts(effectiveCategory, effectiveSubCategory || null);
-        setProducts(Array.isArray(data) ? data : []);
-        setFilteredProducts(Array.isArray(data) ? data : []);
+        const productsArray = Array.isArray(data) ? data : [];
+        
+        setProducts(productsArray);
+        setFilteredProducts(productsArray);
+        
+        // Update cache
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify({
+            data: productsArray,
+            timestamp: Date.now()
+          }));
+        } catch (e) {
+          console.log('Cache write error:', e);
+        }
       } catch (err) {
         console.error('Failed to load products:', err);
         setError('Failed to load products. Please try again later.');

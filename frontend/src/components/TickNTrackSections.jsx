@@ -12,9 +12,55 @@ const TickNTrackSections = () => {
   const [categoryProducts, setCategoryProducts] = useState({});
   const [loadingCategories, setLoadingCategories] = useState(new Set());
 
-  // Load top selling products for each category - Progressive loading (one by one)
+  // Cache key for localStorage
+  const CACHE_KEY = 'tickntrack_top_selling_products';
+  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
+
+  // Load cached data on mount
+  useEffect(() => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        const now = Date.now();
+        // Use cache if less than 5 minutes old
+        if (now - timestamp < CACHE_DURATION) {
+          setCategoryProducts(data);
+          console.log('Loaded top selling products from cache');
+          return; // Don't fetch if cache is valid
+        } else {
+          // Cache expired, remove it
+          localStorage.removeItem(CACHE_KEY);
+        }
+      }
+    } catch (e) {
+      console.log('Cache read error:', e);
+    }
+  }, []);
+
+  // Load top selling products for each category - Progressive loading with cache
   useEffect(() => {
     const loadCategoryProducts = async (category) => {
+      // Check cache first
+      try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          const { data, timestamp } = JSON.parse(cached);
+          const now = Date.now();
+          if (now - timestamp < CACHE_DURATION && data[category.name]) {
+            // Use cached data for this category
+            setCategoryProducts(prev => ({
+              ...prev,
+              [category.name]: data[category.name]
+            }));
+            console.log(`Loaded ${data[category.name].length} products for ${category.name} from cache`);
+            return;
+          }
+        }
+      } catch (e) {
+        // Continue to fetch
+      }
+
       try {
         setLoadingCategories(prev => new Set(prev).add(category.name));
         
@@ -78,10 +124,24 @@ const TickNTrackSections = () => {
           .slice(0, 6);
 
         // Update state immediately for this category (progressive loading)
-        setCategoryProducts(prev => ({
-          ...prev,
-          [category.name]: topProducts
-        }));
+        setCategoryProducts(prev => {
+          const updated = {
+            ...prev,
+            [category.name]: topProducts
+          };
+          
+          // Update cache
+          try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({
+              data: updated,
+              timestamp: Date.now()
+            }));
+          } catch (e) {
+            console.log('Cache write error:', e);
+          }
+          
+          return updated;
+        });
         
         console.log(`Loaded ${topProducts.length} products for ${category.name}`);
       } catch (err) {
