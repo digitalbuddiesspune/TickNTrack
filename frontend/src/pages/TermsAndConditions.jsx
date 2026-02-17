@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const TermsAndConditions = () => {
   const lastUpdated = new Date().toLocaleDateString("en-IN", {
@@ -28,29 +29,16 @@ const TermsAndConditions = () => {
             <p className="leading-relaxed">
               These Terms & Conditions ("Terms") govern your use of the website
               and services offered by{" "}
-              <strong>TickNTrack</strong>
-              ("we", "our", "us"). By accessing or purchasing from our website,
+              <strong>TickNTrack</strong> By <b> WING FUSION ECOMMERCE PRIVATE LIMITED</b> by accessing or purchasing from our website,
               you agree to be bound by these Terms. If you do not agree, please
               do not use our website.
             </p>
           </section>
 
-          {/* 2 */}
+          {/* 2 Products */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              2. Eligibility
-            </h2>
-            <p className="leading-relaxed">
-              You must be at least 18 years of age and capable of entering into
-              a legally binding contract under applicable law to place orders on
-              our website.
-            </p>
-          </section>
-
-          {/* 3 Products */}
-          <section>
-            <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              3. Products, Availability & Pricing
+              2. Products, Availability & Pricing
             </h2>
             <ul className="list-disc list-inside space-y-1">
               <li>
@@ -68,10 +56,10 @@ const TermsAndConditions = () => {
             </ul>
           </section>
 
-          {/* 4 Orders */}
+          {/* 3 Orders */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              4. Orders & Payments
+              3. Orders & Payments
             </h2>
             <ul className="list-disc list-inside space-y-1">
               <li>
@@ -90,40 +78,40 @@ const TermsAndConditions = () => {
             </ul>
           </section>
 
-          {/* 5 Shipping */}
+          {/* 4 Shipping */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              5. Shipping & Delivery
+              4. Shipping & Delivery
             </h2>
             <p className="leading-relaxed">
               Shipping timelines, charges and delivery conditions are governed
               by our{" "}
-              <span className="text-blue-600 cursor-pointer">
+              <Link to="/shipping" className="text-blue-600 hover:underline">
                 Shipping Policy
-              </span>
+              </Link>
               . By placing an order, you agree to those terms as well.
             </p>
           </section>
 
-          {/* 6 Refunds */}
+          {/* 5 Refunds */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              6. Returns, Refunds & Cancellations
+              5. Returns, Refunds & Cancellations
             </h2>
             <p className="leading-relaxed">
               All requests for returns, exchanges, refunds or cancellations are
               handled in accordance with our{" "}
-              <span className="text-blue-600 cursor-pointer">
+              <Link to="/returns" className="text-blue-600 hover:underline">
                 Refund & Cancellation Policy
-              </span>
+              </Link>
               .
             </p>
           </section>
 
-          {/* 7 User responsibilities */}
+          {/* 6 User responsibilities */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              7. User Responsibilities
+              6. User Responsibilities
             </h2>
             <ul className="list-disc list-inside space-y-1">
               <li>Do not use the website for any unlawful or fraudulent purpose.</li>
@@ -139,10 +127,10 @@ const TermsAndConditions = () => {
             </ul>
           </section>
 
-          {/* 8 IP */}
+          {/* 7 IP */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              8. Intellectual Property
+              7. Intellectual Property
             </h2>
             <p className="leading-relaxed">
               All content on the website including logos, product photos,
@@ -154,10 +142,10 @@ const TermsAndConditions = () => {
             </p>
           </section>
 
-          {/* 9 Limitation */}
+          {/* 8 Limitation */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              9. Limitation of Liability
+              8. Limitation of Liability
             </h2>
             <p className="leading-relaxed">
               To the maximum extent permitted by law, we shall not be liable for
@@ -168,10 +156,10 @@ const TermsAndConditions = () => {
             </p>
           </section>
 
-          {/* 10 Fraud */}
+          {/* 9 Fraud */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              10. Fraud Prevention
+              9. Fraud Prevention
             </h2>
             <p className="leading-relaxed">
               We reserve the right to cancel orders, block accounts or refuse
@@ -180,46 +168,10 @@ const TermsAndConditions = () => {
             </p>
           </section>
 
-          {/* 11 Third-party */}
+          {/* 10 Contact */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              11. Third-Party Links
-            </h2>
-            <p className="leading-relaxed">
-              Our website may contain links to third-party sites such as social
-              media platforms and payment gateways. We are not responsible for
-              the content, privacy practices or terms of those websites.
-            </p>
-          </section>
-
-          {/* 12 Changes */}
-          <section>
-            <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              12. Changes to These Terms
-            </h2>
-            <p className="leading-relaxed">
-              We may modify these Terms from time to time. Updated Terms will be
-              posted on this page. Continued use of the website after such
-              changes constitutes your acceptance of the revised Terms.
-            </p>
-          </section>
-
-          {/* 13 Governing law */}
-          <section>
-            <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              13. Governing Law & Jurisdiction
-            </h2>
-            <p className="leading-relaxed">
-              These Terms are governed by the laws of India. Any disputes shall
-              be subject to the exclusive jurisdiction of the courts at Mumbai,
-              Maharashtra.
-            </p>
-          </section>
-
-          {/* 14 Contact */}
-          <section>
-            <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              14. Contact Us
+              10. Contact Us
             </h2>
             <p className="leading-relaxed">
               For any queries regarding these Terms, contact:
@@ -227,15 +179,15 @@ const TermsAndConditions = () => {
               <strong>TickNTrack</strong> <br />
               Email:{" "}
               <span className="text-blue-600">
-                support@tickntrack.com
+              wingfusionpvttld@gmail.com
               </span>{" "}
               <br />
               Phone:{" "}
               <span className="text-blue-600">
-                +91 98765 43210
+                +91 7383821908
               </span>{" "}
               <br />
-              Address: 123 Fashion Street, Mumbai, Maharashtra 400001, India
+              Address: Building No./Flat No. FF-5, Mayurpankh Appt, Member Association Road/Street, Navranpura, Ahmedabad, Ahmedabad District, Gujarat – 380009.
             </p>
           </section>
         </div>

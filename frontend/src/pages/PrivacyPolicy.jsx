@@ -20,8 +20,7 @@ const PrivacyPolicy = () => {
           </p>
           <p className="mt-3 text-sm lg:text-base text-gray-700 max-w-3xl mx-auto">
             This Privacy Policy explains how{" "}
-            <strong>TickNTrack</strong> ("we",
-            "our" or "us") collects, uses, shares and protects your information
+            <strong>TickNTrack</strong> by <b> WING FUSION ECOMMERCE PRIVATE LIMITED</b> collects, uses, shares and protects your information
             when you browse or shop for our products
             through our website (the "Service").
           </p>
@@ -318,34 +317,10 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-          {/* 14. Grievance Officer */}
+          {/* 14. Changes to Policy */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              14. Grievance Officer & Data Protection Queries
-            </h2>
-            <p className="mb-2 leading-relaxed">
-              In accordance with applicable Indian data-protection regulations,
-              you may contact our Grievance Officer for concerns, complaints or
-              queries relating to your personal data or this Privacy Policy.
-            </p>
-            <p className="leading-relaxed">
-              <strong>Grievance Officer:</strong> TickNTrack Support Team <br />
-              Email:{" "}
-              <span className="text-blue-600">
-                support@tickntrack.com
-              </span>{" "}
-              <br />
-              Phone:{" "}
-              <span className="text-blue-600">
-                +91 98765 43210
-              </span>
-            </p>
-          </section>
-
-          {/* 15. Changes to Policy */}
-          <section>
-            <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              15. Changes to This Privacy Policy
+              14. Changes to This Privacy Policy
             </h2>
             <p className="leading-relaxed">
               We may update this Privacy Policy from time to time to reflect
@@ -355,10 +330,10 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-          {/* 16. Contact Details */}
+          {/* 15. Contact Details */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              16. Contact Us
+              15. Contact Us
             </h2>
             <p className="mb-2">
               If you have any questions or concerns regarding this Privacy
@@ -368,15 +343,15 @@ const PrivacyPolicy = () => {
               <strong>TickNTrack</strong> <br />
               Email:{" "}
               <span className="text-blue-600">
-                support@tickntrack.com
+              wingfusionpvttld@gmail.com
               </span>{" "}
               <br />
               Phone:{" "}
               <span className="text-blue-600">
-                +91 98765 43210
+                +91 7383821908
               </span>
               <br />
-              Address: 123 Fashion Street, Mumbai, Maharashtra 400001, India
+              Address: Building No./Flat No. FF-5, Mayurpankh Appt, Member Association Road/Street, Navranpura, Ahmedabad, Ahmedabad District, Gujarat – 380009.
             </p>
           </section>
         </div>

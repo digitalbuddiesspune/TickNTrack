@@ -20,10 +20,8 @@ const RefundCancellationPolicy = () => {
           </p>
           <p className="mt-3 text-sm lg:text-base text-gray-700 max-w-3xl mx-auto">
             This Refund & Cancellation Policy explains how{" "}
-            <strong>Shivrudray International Private Limited</strong> ("we",
-            "our" or "us") handles refunds, returns, exchanges and cancellations
-            for orders placed for products through our
-            website.
+            <strong>TickNTrack</strong> by <b>WING FUSION ECOMMERCE PRIVATE LIMITED</b> handles refunds, returns, exchanges and cancellations
+            for orders placed for products through our website.
           </p>
         </header>
 
@@ -64,7 +62,7 @@ const RefundCancellationPolicy = () => {
             <ul className="list-disc list-inside space-y-1">
               <li>
                 <strong>Return Window:</strong> Returns must be initiated within{" "}
-                <strong>[X] days</strong> of delivery.
+                <strong>7 days</strong> of delivery.
               </li>
               <li>
                 <strong>Product Condition:</strong> Products must be unused,
@@ -94,10 +92,10 @@ const RefundCancellationPolicy = () => {
               <li>
                 Contact us via email at{" "}
                 <span className="text-blue-600">
-                  shivrudrayinternational03@gmail.com
+                  wingfusionpvttld@gmail.com
                 </span>{" "}
                 or call us at{" "}
-                <span className="text-blue-600">+91 92744 90602</span> with your
+                <span className="text-blue-600">+91 7383821908</span> with your
                 order ID.
               </li>
               <li>
@@ -126,7 +124,7 @@ const RefundCancellationPolicy = () => {
             <ul className="list-disc list-inside space-y-1">
               <li>
                 We will process your refund within{" "}
-                <strong>[X] business days</strong> of receiving the returned
+                <strong>7 business days</strong> of receiving the returned
                 item.
               </li>
               <li>
@@ -214,42 +212,10 @@ const RefundCancellationPolicy = () => {
             </ul>
           </section>
 
-          {/* 8. Refund Timeline */}
+          {/* 8. Non-Refundable Items */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              8. Refund Timeline
-            </h2>
-            <p className="leading-relaxed mb-2">
-              Refund processing times vary by payment method:
-            </p>
-            <ul className="list-disc list-inside space-y-1">
-              <li>
-                <strong>Credit/Debit Cards:</strong> 5–10 business days after
-                processing.
-              </li>
-              <li>
-                <strong>UPI/Wallets:</strong> 3–7 business days after
-                processing.
-              </li>
-              <li>
-                <strong>Net Banking:</strong> 5–10 business days after
-                processing.
-              </li>
-              <li>
-                <strong>Bank Transfer (for COD):</strong> 7–14 business days
-                after processing.
-              </li>
-            </ul>
-            <p className="text-sm text-gray-700 mt-2">
-              Note: Actual credit to your account may take additional time
-              depending on your bank's processing time.
-            </p>
-          </section>
-
-          {/* 9. Non-Refundable Items */}
-          <section>
-            <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              9. Non-Refundable Items & Situations
+              8. Non-Refundable Items & Situations
             </h2>
             <p className="leading-relaxed mb-2">
               The following items or situations are not eligible for refund:
@@ -263,10 +229,10 @@ const RefundCancellationPolicy = () => {
             </ul>
           </section>
 
-          {/* 10. Store Credit */}
+          {/* 9. Store Credit */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              10. Store Credit
+              9. Store Credit
             </h2>
             <p className="leading-relaxed mb-2">
               In certain cases, we may offer store credit instead of a refund:
@@ -286,10 +252,10 @@ const RefundCancellationPolicy = () => {
             </ul>
           </section>
 
-          {/* 11. Changes to Policy */}
+          {/* 10. Changes to Policy */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              11. Changes to This Policy
+              10. Changes to This Policy
             </h2>
             <p className="leading-relaxed">
               We may revise this Refund & Cancellation Policy from time to time.
@@ -298,29 +264,28 @@ const RefundCancellationPolicy = () => {
             </p>
           </section>
 
-          {/* 12. Contact */}
+          {/* 11. Contact */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              12. Contact Us
+              11. Contact Us
             </h2>
             <p className="leading-relaxed mb-2">
               For questions about refunds, returns, exchanges or cancellations,
               contact:
             </p>
             <p className="leading-relaxed">
-              <strong>Shivrudray International Private Limited</strong> <br />
+              <strong>TickNTrack</strong> <br />
               Email:{" "}
               <span className="text-blue-600">
-                shivrudrayinternational03@gmail.com
+                wingfusionpvttld@gmail.com
               </span>{" "}
               <br />
               Phone:{" "}
               <span className="text-blue-600">
-                +91 92744 90602 / +91 92740 99941
+                +91 7383821908
               </span>{" "}
               <br />
-              Address: Broker Office No. A-417, THE APMC RS No. 261, Morbi
-              Rajkot Highway, Bedi, Rajkot – 360003, Gujarat, India
+              Address: Building No./Flat No. FF-5, Mayurpankh Appt, Member Association Road/Street, Navranpura, Ahmedabad, Ahmedabad District, Gujarat – 380009
             </p>
           </section>
         </div>

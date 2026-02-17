@@ -20,8 +20,7 @@ const ShippingPolicy = () => {
           </p>
           <p className="mt-3 text-sm lg:text-base text-gray-700 max-w-3xl mx-auto">
             This Shipping Policy explains how{" "}
-            <strong>Shivrudray International Private Limited</strong> ("we",
-            "our" or "us") handles shipping and delivery of orders placed for
+            <strong>TickNTrack</strong> by <b>WING FUSION ECOMMERCE PRIVATE LIMITED</b> handles shipping and delivery of orders placed for
             products through our website.
           </p>
         </header>
@@ -66,44 +65,20 @@ const ShippingPolicy = () => {
             </ul>
           </section>
 
-          {/* 3. Shipping Charges */}
+          {/* 3. Estimated Delivery Timelines */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              3. Shipping Charges
-            </h2>
-            <p className="leading-relaxed mb-2">
-              Shipping charges (if applicable) will be clearly displayed at
-              checkout before you confirm your order. Our standard structure is:
-            </p>
-            <ul className="list-disc list-inside space-y-1">
-              <li>
-                <strong>Standard Shipping:</strong> ₹[X] for orders below ₹[Amount].
-              </li>
-              <li>
-                <strong>Free Shipping:</strong> for orders above ₹[Amount] (if
-                offered).
-              </li>
-            </ul>
-            <p className="text-sm text-gray-700 mt-2">
-              Replace the placeholder amounts above with your actual shipping
-              fee rules.
-            </p>
-          </section>
-
-          {/* 4. Estimated Delivery Timelines */}
-          <section>
-            <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              4. Estimated Delivery Timelines
+              3. Estimated Delivery Timelines
             </h2>
             <p className="leading-relaxed mb-2">
               After dispatch, estimated delivery times are:
             </p>
             <ul className="list-disc list-inside space-y-1">
               <li>
-                <strong>Metro Cities:</strong> 3–5 business days.
+                <strong>Near Customers:</strong> 3–5 business days.
               </li>
               <li>
-                <strong>Other Cities & Towns:</strong> 4–7 business days.
+                <strong>Long Metro City:</strong> 5–7 business days.
               </li>
               <li>
                 <strong>Remote / Out-of-delivery Areas:</strong> 7–10 business
@@ -116,26 +91,10 @@ const ShippingPolicy = () => {
             </p>
           </section>
 
-          {/* 5. Order Tracking */}
+          {/* 4. Address Accuracy */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              5. Order Tracking
-            </h2>
-            <p className="leading-relaxed mb-2">
-              Once your order is dispatched, you will receive a tracking ID and
-              link via SMS/WhatsApp/email (where available), which you can use
-              to follow your shipment.
-            </p>
-            <p className="leading-relaxed">
-              If you face any difficulty in tracking, contact us with your order
-              ID and registered mobile number or email.
-            </p>
-          </section>
-
-          {/* 6. Address Accuracy */}
-          <section>
-            <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              6. Shipping Address & Contact Details
+              4. Shipping Address & Contact Details
             </h2>
             <p className="leading-relaxed mb-2">
               Please ensure your address, PIN code and contact number are
@@ -153,10 +112,10 @@ const ShippingPolicy = () => {
             </ul>
           </section>
 
-          {/* 7. Undelivered / Returned Shipments */}
+          {/* 5. Undelivered / Returned Shipments */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              7. Undelivered or Returned Shipments
+              5. Undelivered or Returned Shipments
             </h2>
             <p className="leading-relaxed mb-2">
               Orders may be returned to us by the courier due to:
@@ -180,10 +139,10 @@ const ShippingPolicy = () => {
             </ul>
           </section>
 
-          {/* 8. Delays Beyond Our Control */}
+          {/* 6. Delays Beyond Our Control */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              8. Delays Beyond Our Control
+              6. Delays Beyond Our Control
             </h2>
             <p className="leading-relaxed">
               While we aim for timely delivery, certain events such as natural
@@ -194,10 +153,10 @@ const ShippingPolicy = () => {
             </p>
           </section>
 
-          {/* 9. International Shipping */}
+          {/* 7. International Shipping */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              9. International Shipping
+              7. International Shipping
             </h2>
             <p className="leading-relaxed">
               Currently, we{" "}
@@ -207,10 +166,10 @@ const ShippingPolicy = () => {
             </p>
           </section>
 
-          {/* 10. Damaged Packages */}
+          {/* 8. Damaged Packages */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              10. Damaged, Opened or Tampered Packages
+              8. Damaged, Opened or Tampered Packages
             </h2>
             <p className="leading-relaxed mb-2">
               If you receive a package that appears damaged, tampered or opened:
@@ -228,14 +187,14 @@ const ShippingPolicy = () => {
             </p>
           </section>
 
-          {/* 11. COD */}
+          {/* 9. COD */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              11. Cash on Delivery (COD)
+              9. Cash on Delivery (COD)
             </h2>
             <p className="leading-relaxed mb-2">
               Cash on Delivery (COD) service is{" "}
-              <strong>[available / not available]</strong>. If offered:
+              <strong>available</strong>. If offered:
             </p>
             <ul className="list-disc list-inside space-y-1">
               <li>COD eligibility and charges will be shown at checkout.</li>
@@ -246,10 +205,10 @@ const ShippingPolicy = () => {
             </ul>
           </section>
 
-          {/* 12. Changes */}
+          {/* 10. Changes */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              12. Changes to This Shipping Policy
+              10. Changes to This Shipping Policy
             </h2>
             <p className="leading-relaxed">
               We may revise this Shipping Policy from time to time. Any updates
@@ -257,28 +216,27 @@ const ShippingPolicy = () => {
             </p>
           </section>
 
-          {/* 13. Contact */}
+          {/* 11. Contact */}
           <section>
             <h2 className="text-xl lg:text-2xl font-semibold mb-3">
-              13. Contact Us
+              11. Contact Us
             </h2>
             <p className="leading-relaxed mb-2">
               For questions about shipping or delivery, contact:
             </p>
             <p className="leading-relaxed">
-              <strong>Shivrudray International Private Limited</strong> <br />
+              <strong>WING FUSION ECOMMERCE PRIVATE LIMITED</strong> <br />
               Email:{" "}
               <span className="text-blue-600">
-                shivrudrayinternational03@gmail.com
+                wingfusionpvttld@gmail.com
               </span>{" "}
               <br />
               Phone:{" "}
               <span className="text-blue-600">
-                +91 92744 90602 / +91 92740 99941
+                +91 7383821908
               </span>{" "}
               <br />
-              Address: Broker Office No. A-417, THE APMC RS No. 261, Morbi
-              Rajkot Highway, Bedi, Rajkot – 360003, Gujarat, India
+              Address: Building No./Flat No. FF-5, Mayurpankh Appt, Member Association Road/Street, Navranpura, Ahmedabad, Ahmedabad District, Gujarat – 380009.
             </p>
           </section>
         </div>

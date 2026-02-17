@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
-import { Heart, Mail, Phone, MapPin, Facebook, Instagram, Twitter, Youtube, ShoppingBag, Truck, Shield, RotateCcw, HeadphonesIcon, Clock, ChevronRight } from 'lucide-react';
+import { Mail, Phone, MapPin, FileText, Facebook, Instagram, Twitter, Youtube, ChevronRight } from 'lucide-react';
+import { CATEGORIES } from '../constants/categories';
+import { LOGO_URL } from '../constants/app';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -7,17 +9,19 @@ const Footer = () => {
   const quickLinks = [
     { name: 'Home', path: '/' },
     { name: 'About Us', path: '/about' },
-    { name: 'Contact', path: '/contact' },
+    { name: 'Contact Us', path: '/contact' },
   ];
 
-  const categories = [
-    { name: 'Men\'s Shoes', path: '/category/shoes/mens-shoes' },
-    { name: 'Women\'s Shoes', path: '/category/shoes/womens-shoes' },
-    { name: 'Sports Shoes', path: '/category/shoes/sports-shoes' },
-    { name: 'Luxury Watches', path: '/category/watches/luxury-watches' },
-    { name: 'Smart Watches', path: '/category/watches/smart-watches' },
-    { name: 'Accessories', path: '/category/accessories' },
-  ];
+  const toTitleCase = (str) =>
+    str
+      .toLowerCase()
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  const categories = CATEGORIES.map((cat) => ({
+    name: toTitleCase(cat.name),
+    path: cat.path,
+  }));
 
 
   const companyInfo = [
@@ -52,77 +56,49 @@ const Footer = () => {
     },
   ];
 
-  const features = [
-    { icon: <Truck className="w-6 h-6" />, title: 'Free Shipping', description: 'On orders above ₹999' },
-    { icon: <RotateCcw className="w-6 h-6" />, title: 'Easy Returns', description: '7-day return policy' },
-    { icon: <Shield className="w-6 h-6" />, title: 'Secure Payment', description: '100% secure transactions' },
-    { icon: <HeadphonesIcon className="w-6 h-6" />, title: '24/7 Support', description: 'Dedicated customer care' },
-  ];
-
   return (
     <footer className="bg-gray-900 text-white w-full">
       {/* Main Footer Content */}
       <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-4 2xl:px-6 pt-6 pb-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 items-start">
           {/* Brand Column */}
-          <div className="lg:col-span-1">
-            <div className="mb-6 -mx-2 -mt-8">
-              <Link to="/" className="inline-block -mt-4">
-                <img 
-                  src="https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765853492/image-removebg-preview_ji9lfq.png"
-                  alt="TickNTrack"
-                  className="h-32 sm:h-40 w-auto object-contain filter brightness-0 invert hover:opacity-90 transition-opacity"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.style.display = 'none';
-                    const parent = e.target.parentElement;
-                    if (parent && !parent.querySelector('.text-logo-fallback')) {
-                      const textLogo = document.createElement('div');
-                      textLogo.className = 'text-logo-fallback text-4xl font-bold text-white mb-4';
-                      textLogo.textContent = 'TickNTrack';
-                      parent.appendChild(textLogo);
-                    }
-                  }}
-                />
-              </Link>
-              <p className="text-gray-400 leading-relaxed max-w-md -mt-10 mb-6">
-                Your trusted destination for premium footwear and luxury timepieces. 
-                We bring you the finest collection of shoes and watches from top brands worldwide.
-              </p>
-
-              {/* Contact Info */}
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center gap-3 text-gray-400">
-                  <Phone className="w-5 h-5 text-teal-500" />
-                  <span>+91 98765 43210</span>
-                </div>
-                <div className="flex items-center gap-3 text-gray-400">
-                  <Mail className="w-5 h-5 text-teal-500" />
-                  <span>support@tickntrack.com</span>
-                </div>
-                <div className="flex items-center gap-3 text-gray-400">
-                  <MapPin className="w-5 h-5 text-teal-500" />
-                  <span>123 Fashion Street, Mumbai, India 400001</span>
-                </div>
-              </div>
-
-              {/* Social Links */}
-              <div>
-                <h5 className="font-semibold text-white mb-4">Follow Us</h5>
-                <div className="flex gap-3">
-                  {socialLinks.map((social, index) => (
-                    <a
-                      key={index}
-                      href={social.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:bg-teal-600 hover:text-white transition-colors duration-300"
-                      aria-label={social.name}
-                    >
-                      {social.icon}
-                    </a>
-                  ))}
-                </div>
+          <div className="lg:col-span-1 flex flex-col">
+            <Link to="/" className="mb-4 block">
+              <img
+                src={LOGO_URL}
+                alt="TickNTrack"
+                className="h-10 sm:h-12 w-auto object-contain filter brightness-0 invert hover:opacity-90 transition-opacity"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.style.display = 'none';
+                  const parent = e.target.parentElement;
+                  if (parent && !parent.querySelector('.text-logo-fallback')) {
+                    const textLogo = document.createElement('div');
+                    textLogo.className = 'text-logo-fallback text-2xl font-bold text-white';
+                    textLogo.textContent = 'TickNTrack';
+                    parent.appendChild(textLogo);
+                  }
+                }}
+              />
+            </Link>
+            <p className="text-gray-400 leading-relaxed text-sm mb-4">
+              Your trusted destination for premium footwear and luxury timepieces.
+            </p>
+            <div>
+              <h5 className="font-semibold text-white mb-4">Follow Us</h5>
+              <div className="flex gap-3">
+                {socialLinks.map((social, index) => (
+                  <a
+                    key={index}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-9 h-9 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:bg-teal-600 hover:text-white transition-colors duration-300"
+                    aria-label={social.name}
+                  >
+                    {social.icon}
+                  </a>
+                ))}
               </div>
             </div>
           </div>
@@ -162,27 +138,49 @@ const Footer = () => {
               ))}
             </ul>
           </div>
+
+          {/* Contact Info - Right Side */}
+          <div>
+            <h5 className="font-semibold text-white mb-4">Contact Us</h5>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 text-gray-400">
+                <Phone className="w-5 h-5 text-teal-500 flex-shrink-0" />
+                <span>+91 7383821908</span>
+              </div>
+              <div className="flex items-center gap-3 text-gray-400">
+                <Mail className="w-5 h-5 text-teal-500 flex-shrink-0" />
+                <span>wingfusionpvttld@gmail.com</span>
+              </div>
+              <div className="flex items-center gap-3 text-gray-400">
+                <MapPin className="w-5 h-5 text-teal-500 flex-shrink-0" />
+                <span className="block">
+                  
+                Navranpura, Ahmedabad – 380009<br />
+                  Gujarat, India
+                </span>
+              </div>
+              <div className="flex items-center gap-3 text-gray-400">
+                <FileText className="w-5 h-5 text-teal-500 flex-shrink-0" />
+                <span>Wing Fusion Ecommerce Private Limited · CIN: U47912GJ20240PC156357</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Bottom Footer */}
       <div className="border-t border-gray-800">
         <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-4 2xl:px-6 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-gray-400 text-sm">
-              © {currentYear} TickNTrack. All rights reserved. Made with 
-              <Heart className="w-4 h-4 inline mx-1 text-red-500" /> 
-              in India
+          <div className="flex flex-col gap-4 items-center">
+            <div className="text-gray-400 text-sm text-center whitespace-nowrap">
+              © {currentYear} TickNTrack by WING FUSION ECOMMERCE PRIVATE LIMITED. All rights reserved.
             </div>
-            <div className="flex gap-6">
-              <Link to="/terms" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300">
-                Terms & Conditions
-              </Link>
-              <Link to="/privacy" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300">
-                Privacy Policy
-              </Link>
-              <Link to="/sitemap" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300">
-                Sitemap
+            <div className="flex flex-nowrap gap-4 md:gap-6 justify-end w-full">
+              <Link to="/terms" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300 whitespace-nowrap">Terms & Conditions</Link>
+              <Link to="/privacy" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300 whitespace-nowrap">Privacy Policy</Link>
+              <Link to="/shipping" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300 whitespace-nowrap">Shipping Policy</Link>
+              <Link to="/returns" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300 whitespace-nowrap">
+                Refund & Cancellation Policy
               </Link>
             </div>
           </div>
