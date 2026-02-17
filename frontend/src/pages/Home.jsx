@@ -18,10 +18,6 @@ const Home = () => {
             desktop: 'https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765795400/Black_Bold_Texts_Login_Page_Wireframe_Website_UI_Prototype_2048_x_594_px_1_morepy.svg',
             alt: 'TickNTrack - Premium Collection',
           },
-          {
-            desktop: 'https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765793938/Black_Bold_Texts_Login_Page_Wireframe_Website_UI_Prototype_2048_x_594_px_2_pl1jml.png',
-            alt: 'Festive Offer - TickNTrack',
-          },
         ]}
         mobileSrc="https://res.cloudinary.com/dvkxgrcbv/image/upload/v1765774178/febeb7e114e3b4a6ecf505026489a318_qldt6e.jpg"
       />
