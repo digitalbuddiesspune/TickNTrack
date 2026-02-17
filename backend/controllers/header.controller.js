@@ -19,7 +19,7 @@ export const getHeaderData = async (req, res) => {
           { name: 'New Arrivals', url: '/new-arrivals' },
           { name: 'Best Sellers', url: '/best-sellers' },
           { name: 'Deals', url: '/deals' },
-          { name: 'Contact', url: '/contact' }
+          { name: 'Contact', url: '/contact-us' }
         ]
       },
       search: {

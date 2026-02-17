@@ -488,17 +488,17 @@ const Navbar = () => {
                 COLLECTIONS
               </Link>
               <Link
-                to="/about"
+                to="/about-us"
                 className={`relative px-3 py-2 font-medium text-sm uppercase transition-colors rounded-md ${
-                  isActive('/about') ? 'text-gray-900 bg-white/70 shadow-sm' : 'text-gray-700 hover:text-gray-900 hover:bg-white/50'
+                  isActive('/about-us') ? 'text-gray-900 bg-white/70 shadow-sm' : 'text-gray-700 hover:text-gray-900 hover:bg-white/50'
                 }`}
               >
                 ABOUT
               </Link>
               <Link
-                to="/contact"
+                to="/contact-us"
                 className={`relative px-3 py-2 font-medium text-sm uppercase transition-colors rounded-md ${
-                  isActive('/contact') ? 'text-gray-900 bg-white/70 shadow-sm' : 'text-gray-700 hover:text-gray-900 hover:bg-white/50'
+                  isActive('/contact-us') ? 'text-gray-900 bg-white/70 shadow-sm' : 'text-gray-700 hover:text-gray-900 hover:bg-white/50'
                 }`}
               >
                 CONTACT

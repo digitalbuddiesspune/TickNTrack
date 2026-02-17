@@ -86,7 +86,7 @@ const TermsAndConditions = () => {
             <p className="leading-relaxed">
               Shipping timelines, charges and delivery conditions are governed
               by our{" "}
-              <Link to="/shipping" className="text-blue-600 hover:underline">
+              <Link to="/shipping-policy" className="text-blue-600 hover:underline">
                 Shipping Policy
               </Link>
               . By placing an order, you agree to those terms as well.
@@ -101,7 +101,7 @@ const TermsAndConditions = () => {
             <p className="leading-relaxed">
               All requests for returns, exchanges, refunds or cancellations are
               handled in accordance with our{" "}
-              <Link to="/returns" className="text-blue-600 hover:underline">
+              <Link to="/refund-cancellation-policy" className="text-blue-600 hover:underline">
                 Refund & Cancellation Policy
               </Link>
               .

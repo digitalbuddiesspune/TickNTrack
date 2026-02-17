@@ -8,8 +8,8 @@ const Footer = () => {
 
   const quickLinks = [
     { name: 'Home', path: '/' },
-    { name: 'About Us', path: '/about' },
-    { name: 'Contact Us', path: '/contact' },
+    { name: 'About Us', path: '/about-us' },
+    { name: 'Contact Us', path: '/contact-us' },
   ];
 
   const toTitleCase = (str) =>
@@ -25,12 +25,12 @@ const Footer = () => {
 
 
   const companyInfo = [
-    { name: 'Our Story', path: '/about' },
+    { name: 'Our Story', path: '/about-us' },
     { name: 'Careers', path: '/careers' },
     { name: 'Press', path: '/press' },
     { name: 'Partner with Us', path: '/partners' },
-    { name: 'Terms & Conditions', path: '/terms' },
-    { name: 'Privacy Policy', path: '/privacy' },
+    { name: 'Terms & Conditions', path: '/terms-and-conditions' },
+    { name: 'Privacy Policy', path: '/privacy-policy' },
   ];
 
   const socialLinks = [
@@ -176,10 +176,10 @@ const Footer = () => {
               © {currentYear} TickNTrack by WING FUSION ECOMMERCE PRIVATE LIMITED. All rights reserved.
             </div>
             <div className="flex flex-nowrap gap-4 md:gap-6 justify-end w-full">
-              <Link to="/terms" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300 whitespace-nowrap">Terms & Conditions</Link>
-              <Link to="/privacy" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300 whitespace-nowrap">Privacy Policy</Link>
-              <Link to="/shipping" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300 whitespace-nowrap">Shipping Policy</Link>
-              <Link to="/returns" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300 whitespace-nowrap">
+              <Link to="/terms-and-conditions" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300 whitespace-nowrap">Terms & Conditions</Link>
+              <Link to="/privacy-policy" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300 whitespace-nowrap">Privacy Policy</Link>
+              <Link to="/shipping-policy" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300 whitespace-nowrap">Shipping Policy</Link>
+              <Link to="/refund-cancellation-policy" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300 whitespace-nowrap">
                 Refund & Cancellation Policy
               </Link>
             </div>

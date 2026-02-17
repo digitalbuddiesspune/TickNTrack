@@ -115,14 +115,14 @@ const Router = () => {
           <Route path="category/:categoryName" element={<ProductList />} />
           {/* Product Detail - Using ID for better reliability */}
           <Route path="product/:id" element={<ProductDetail />} />
-          <Route path="about" element={<About />} />
-          <Route path="contact" element={<Contact />} />
+          <Route path="about-us" element={<About />} />
+          <Route path="contact-us" element={<Contact />} />
           <Route path="wishlist" element={<Wishlist />} />
           <Route path="top-selling" element={<TopSellingProducts />} />
-          <Route path="privacy" element={<PrivacyPolicy />} />
-          <Route path="terms" element={<TermsAndConditions />} />
-          <Route path="shipping" element={<ShippingPolicy />} />
-          <Route path="returns" element={<RefundCancellationPolicy />} />
+          <Route path="privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="terms-and-conditions" element={<TermsAndConditions />} />
+          <Route path="shipping-policy" element={<ShippingPolicy />} />
+          <Route path="refund-cancellation-policy" element={<RefundCancellationPolicy />} />
 
           {/* Private route(s) */}
           <Route path="cart" element={<RequireAuth><Cart /></RequireAuth>} />
