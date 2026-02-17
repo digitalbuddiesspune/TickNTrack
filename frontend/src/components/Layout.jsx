@@ -38,20 +38,36 @@ const Layout = () => {
   }, []);
 
   useEffect(() => {
-    const SCROLL_THRESHOLD = 20;
+    const SCROLL_THRESHOLD = 10;
     const handleScroll = () => {
       if (window.innerWidth < 768) return;
       const y = window.scrollY;
       const delta = y - lastScrollY.current;
+      
+      // At top of page, always show navbar
       if (y < 60) {
         setShowSecondaryNav(true);
-      } else if (Math.abs(delta) < SCROLL_THRESHOLD) {
+        lastScrollY.current = y;
         return;
-      } else if (delta > 0) {
-        setShowSecondaryNav(true);
-      } else {
-        setShowSecondaryNav(false);
       }
+      
+      // Ignore small scroll movements
+      if (Math.abs(delta) < SCROLL_THRESHOLD) {
+        return;
+      }
+      
+      // Standard e-commerce pattern (Amazon/Flipkart style):
+      // Scroll DOWN → Hide navbar (saves screen space for content)
+      // Scroll UP → Show navbar (user wants navigation)
+      if (delta > 0) {
+        // Scrolling down - hide secondary navbar
+        setShowSecondaryNav(false);
+      } 
+      else {
+        // Scrolling up - show secondary navbar
+        setShowSecondaryNav(true);
+      }
+      
       lastScrollY.current = y;
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -63,14 +79,17 @@ const Layout = () => {
       {/* Navbar - Fixed at top */}
       <div ref={headerWrapRef} className="fixed top-0 left-0 right-0 z-[9999] bg-gradient-to-br from-gray-50 via-teal-50/30 to-cyan-50/30 transition-[height] duration-200" style={{ overflow: 'visible' }}>
         <Navbar />
-        <div
-          className={`grid transition-all duration-300 ease-out ${
-            showSecondaryNav ? 'grid-rows-[1fr] opacity-100 overflow-visible' : 'grid-rows-[0fr] opacity-0 overflow-hidden'
-          }`}
-          aria-hidden={!showSecondaryNav}
-        >
-          <div className={showSecondaryNav ? 'overflow-visible min-h-0' : 'overflow-hidden min-h-0'}>
-            <SecondaryNavbar />
+        {/* Secondary Navbar - Desktop only, hidden on mobile */}
+        <div className="hidden md:block">
+          <div
+            className={`grid transition-all duration-300 ease-out ${
+              showSecondaryNav ? 'grid-rows-[1fr] opacity-100 overflow-visible' : 'grid-rows-[0fr] opacity-0 overflow-hidden'
+            }`}
+            aria-hidden={!showSecondaryNav}
+          >
+            <div className={showSecondaryNav ? 'overflow-visible min-h-0' : 'overflow-hidden min-h-0'}>
+              <SecondaryNavbar />
+            </div>
           </div>
         </div>
       </div>

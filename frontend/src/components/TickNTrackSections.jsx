@@ -10,98 +10,101 @@ const TickNTrackSections = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
   const [activeFilter, setActiveFilter] = useState('all');
   const [categoryProducts, setCategoryProducts] = useState({});
-  const [loadingTopSelling, setLoadingTopSelling] = useState(true);
+  const [loadingCategories, setLoadingCategories] = useState(new Set());
 
-  // Load top selling products for each category
+  // Load top selling products for each category - Progressive loading (one by one)
   useEffect(() => {
-    const loadTopSelling = async () => {
+    const loadCategoryProducts = async (category) => {
       try {
-        setLoadingTopSelling(true);
-        const productsByCategory = {};
-
-        for (const category of CATEGORIES) {
+        setLoadingCategories(prev => new Set(prev).add(category.name));
+        
+        const allProducts = [];
+        
+        // Try parent category name first (most common case)
+        try {
+          const parentProducts = await fetchProducts(category.name, null);
+          if (parentProducts && Array.isArray(parentProducts) && parentProducts.length > 0) {
+            allProducts.push(...parentProducts);
+          }
+        } catch (e) {
+          // Try alternative format
           try {
-            // Fetch products from all subcategories of this parent category
-            const allProducts = [];
-            
-            // Try parent category name variations
-            const parentNameVariations = [
-              category.name,
-              category.name.replace("'S", "'s"),
-              category.name.replace("'S", "s"),
-              category.name.toLowerCase(),
-            ];
-            
-            for (const nameVar of parentNameVariations) {
-              try {
-                const parentProducts = await fetchProducts(nameVar, null);
-                if (parentProducts && Array.isArray(parentProducts)) {
-                  allProducts.push(...parentProducts);
-                  // Don't break - try all variations to get maximum products
-                }
-              } catch (e) {
-                // Continue to next variation
-                console.log(`Failed to fetch with variation "${nameVar}":`, e.message);
-              }
+            const altName = category.name.replace("'S", "'s");
+            const altProducts = await fetchProducts(altName, null);
+            if (altProducts && Array.isArray(altProducts) && altProducts.length > 0) {
+              allProducts.push(...altProducts);
             }
-            
-            // Then fetch from each subcategory
-            for (const subcategory of category.subcategories || []) {
-              try {
-                // Try as subcategory first
-                const subProducts = await fetchProducts(null, subcategory.name);
-                if (subProducts && subProducts.length > 0) {
-                  allProducts.push(...subProducts);
-                } else {
-                  // Try as category if subcategory didn't work
-                  const subAsCat = await fetchProducts(subcategory.name, null);
-                  if (subAsCat && subAsCat.length > 0) {
-                    allProducts.push(...subAsCat);
-                  }
-                }
-              } catch (subErr) {
-                // Continue to next subcategory
-                console.log(`Could not fetch subcategory ${subcategory.name}`);
-              }
-            }
-            
-            // Remove duplicates by _id
-            const uniqueProducts = Array.from(
-              new Map(allProducts.map(p => [p._id || p.id, p])).values()
-            );
-            
-            // Sort: prioritize products with discount, but include ALL products (even without discount)
-            // Show all products from category, not just sale items
-            const topProducts = uniqueProducts
-              .sort((a, b) => {
-                const discountA = a.discountPercent || 0;
-                const discountB = b.discountPercent || 0;
-                // First sort by discount (higher discount first) - but still include products with 0% discount
-                if (discountB !== discountA) return discountB - discountA;
-                // Then by price (lower price first)
-                const priceA = a.price || a.mrp || 0;
-                const priceB = b.price || b.mrp || 0;
-                return priceA - priceB;
-              })
-              .slice(0, 6); // Take top 6, regardless of discount
-
-            productsByCategory[category.name] = topProducts;
-            console.log(`Loaded ${topProducts.length} products for ${category.name} (from ${uniqueProducts.length} total)`);
-          } catch (err) {
-            console.error(`Error loading products for ${category.name}:`, err);
-            productsByCategory[category.name] = [];
+          } catch (e2) {
+            // Continue to subcategories
           }
         }
+        
+        // Fetch from first 2-3 subcategories only (to speed up)
+        const subcategoriesToTry = (category.subcategories || []).slice(0, 3);
+        for (const subcategory of subcategoriesToTry) {
+          try {
+            const subProducts = await fetchProducts(null, subcategory.name);
+            if (subProducts && Array.isArray(subProducts) && subProducts.length > 0) {
+              allProducts.push(...subProducts);
+            }
+          } catch (subErr) {
+            // Try as category
+            try {
+              const subAsCat = await fetchProducts(subcategory.name, null);
+              if (subAsCat && Array.isArray(subAsCat) && subAsCat.length > 0) {
+                allProducts.push(...subAsCat);
+              }
+            } catch (e) {
+              // Continue
+            }
+          }
+        }
+        
+        // Remove duplicates by _id
+        const uniqueProducts = Array.from(
+          new Map(allProducts.map(p => [p._id || p.id, p])).values()
+        );
+        
+        // Sort and take top 6
+        const topProducts = uniqueProducts
+          .sort((a, b) => {
+            const discountA = a.discountPercent || 0;
+            const discountB = b.discountPercent || 0;
+            if (discountB !== discountA) return discountB - discountA;
+            const priceA = a.price || a.mrp || 0;
+            const priceB = b.price || b.mrp || 0;
+            return priceA - priceB;
+          })
+          .slice(0, 6);
 
-        setCategoryProducts(productsByCategory);
+        // Update state immediately for this category (progressive loading)
+        setCategoryProducts(prev => ({
+          ...prev,
+          [category.name]: topProducts
+        }));
+        
+        console.log(`Loaded ${topProducts.length} products for ${category.name}`);
       } catch (err) {
-        console.error('Error loading top selling products:', err);
+        console.error(`Error loading products for ${category.name}:`, err);
+        setCategoryProducts(prev => ({
+          ...prev,
+          [category.name]: []
+        }));
       } finally {
-        setLoadingTopSelling(false);
+        setLoadingCategories(prev => {
+          const next = new Set(prev);
+          next.delete(category.name);
+          return next;
+        });
       }
     };
 
-    loadTopSelling();
+    // Load categories one by one with small delay to avoid overwhelming the server
+    CATEGORIES.forEach((category, index) => {
+      setTimeout(() => {
+        loadCategoryProducts(category);
+      }, index * 200); // 200ms delay between each category
+    });
   }, []);
 
   // Premium Collection Categories
@@ -505,9 +508,12 @@ const TickNTrackSections = () => {
 
     const CategoryProductsSection = ({ category }) => {
       const products = categoryProducts[category.name] || [];
+      const isLoading = loadingCategories.has(category.name);
       
-      // Always show section - even if no products, show message
-      // This helps debug and shows user that category exists
+      // Don't show section until it has products or finished loading
+      if (!isLoading && products.length === 0) {
+        return null;
+      }
 
       return (
         <section className="py-4 md:py-6 bg-gradient-to-br from-gray-50 via-teal-50/30 to-cyan-50/30">
@@ -527,7 +533,7 @@ const TickNTrackSections = () => {
             </div>
 
             {/* Products Grid */}
-            {loadingTopSelling ? (
+            {isLoading ? (
               <>
                 <div className="flex justify-center items-center mb-6">
                   <div className="w-8 h-8 border-2 border-teal-600 border-t-transparent rounded-full animate-spin" />
@@ -547,11 +553,7 @@ const TickNTrackSections = () => {
                   ))}
                 </div>
               </>
-            ) : products.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
-                <p>No products available in this category</p>
-              </div>
-            ) : (
+            ) : products.length === 0 ? null : (
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
                   {products.map((product) => {

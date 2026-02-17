@@ -572,8 +572,8 @@ const Navbar = () => {
                 )}
               </div>
 
-              {/* Wishlist Icon */}
-              <Link to="/wishlist" className="p-1.5 sm:p-2 text-gray-700 hover:text-red-500 relative transition-all duration-200 hover:scale-110 group">
+              {/* Wishlist Icon - Desktop only */}
+              <Link to="/wishlist" className="hidden md:block p-1.5 sm:p-2 text-gray-700 hover:text-red-500 relative transition-all duration-200 hover:scale-110 group">
                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.312-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                 </svg>
@@ -584,8 +584,8 @@ const Navbar = () => {
                 )}
               </Link>
 
-              {/* Cart Icon */}
-              <Link to="/cart" className="p-1.5 sm:p-2 text-gray-700 hover:text-gray-900 relative transition-all duration-200 hover:scale-110">
+              {/* Cart Icon - Desktop only */}
+              <Link to="/cart" className="hidden md:block p-1.5 sm:p-2 text-gray-700 hover:text-gray-900 relative transition-all duration-200 hover:scale-110">
                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.25 10.5a.75.75 0 01-.75.75H5.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zm6.75 0a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75z" />
                 </svg>
@@ -634,47 +634,45 @@ const Navbar = () => {
         {isMobileMenuOpen && (
           <div id="mobile-menu" className="md:hidden border-t border-gray-200 bg-gradient-to-br from-gray-50 via-teal-50/40 to-cyan-50/40 shadow-lg relative z-[70] max-h-[calc(100vh-120px)] overflow-y-auto">
             <div className="py-4">
-              <nav className="flex flex-col space-y-1 px-4" aria-label="Mobile navigation">
-                <Link
-                  to="/"
-                  className={`w-full text-left font-medium py-3 px-4 rounded-lg transition-all duration-200 text-sm uppercase ${
-                    location.pathname === '/' ? 'text-gray-900 bg-white/80 shadow-sm' : 'text-gray-700 hover:text-gray-900 hover:bg-white/60'
-                  }`}
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                >
-                  HOME
-                </Link>
-                <Link
-                  to="/collections"
-                  className={`w-full text-left font-medium py-3 px-4 rounded-lg transition-all duration-200 text-sm uppercase ${
-                    location.pathname.startsWith('/collections') ? 'text-gray-900 bg-white/80 shadow-sm' : 'text-gray-700 hover:text-gray-900 hover:bg-white/60'
-                  }`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  COLLECTIONS
-                </Link>
-                <Link
-                  to="/about"
-                  className={`w-full text-left font-medium py-3 px-4 rounded-lg transition-all duration-200 text-sm uppercase ${
-                    location.pathname === '/about' ? 'text-gray-900 bg-white/80 shadow-sm' : 'text-gray-700 hover:text-gray-900 hover:bg-white/60'
-                  }`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  ABOUT
-                </Link>
-                <Link
-                  to="/contact"
-                  className={`w-full text-left font-medium py-3 px-4 rounded-lg transition-all duration-200 text-sm uppercase ${
-                    location.pathname === '/contact' ? 'text-gray-900 bg-white/80 shadow-sm' : 'text-gray-700 hover:text-gray-900 hover:bg-white/60'
-                  }`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  CONTACT
-                </Link>
-              </nav>
+              {/* Categories Section in Mobile Menu */}
+              <div className="mt-4 pt-4 px-4 border-t border-gray-200">
+                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-4">CATEGORIES</div>
+                <nav className="flex flex-col space-y-1" aria-label="Mobile categories">
+                  {CATEGORIES.map((cat) => (
+                    <div key={cat.name} className="border border-gray-200 rounded-lg overflow-hidden bg-white/60">
+                      <Link
+                        to={cat.path}
+                        className={`block px-4 py-3 text-sm font-medium transition-colors uppercase ${
+                          location.pathname === cat.path || location.pathname.startsWith(cat.path + '/')
+                            ? 'text-teal-800 bg-white/80'
+                            : 'text-gray-700 hover:text-gray-900 hover:bg-white/70'
+                        }`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        {cat.name}
+                      </Link>
+                      {cat.subcategories?.length > 0 && (
+                        <div className="pl-4 pb-2 flex flex-wrap gap-1">
+                          {cat.subcategories.map((sub) => (
+                            <Link
+                              key={sub.path}
+                              to={sub.path}
+                              className={`text-xs px-3 py-1.5 rounded-md border transition-colors ${
+                                location.pathname === sub.path
+                                  ? 'bg-teal-100 border-teal-300 text-teal-800'
+                                  : 'bg-white/80 border-gray-200 text-gray-700 hover:text-gray-900 hover:bg-white hover:border-gray-300'
+                              }`}
+                              onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                              {sub.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </nav>
+              </div>
 
               {/* Auth Section in Mobile Menu */}
               {!isAuthenticated && (
