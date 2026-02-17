@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { api } from '../../utils/api';
 import { FiEdit, FiTrash2, FiX, FiPlus } from 'react-icons/fi';
+import { CATEGORIES } from '../../constants/categories.js';
 
 const AdminProducts = () => {
   const [form, setForm] = useState({
@@ -27,15 +28,17 @@ const AdminProducts = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [toast, setToast] = useState({ show: false, text: '', type: 'success' });
 
-  const load = async () => {
+  const load = async (options = {}) => {
+    const showLoading = options.showLoading !== false;
     try {
-      setLoading(true);
+      if (showLoading) setLoading(true);
       const data = await api.admin.listProducts();
       setList(data || []);
+      if (!showLoading) setError('');
     } catch (e) {
       setError(e.message || 'Failed to load products');
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   };
 
@@ -71,7 +74,7 @@ const AdminProducts = () => {
       setToast({ show: true, text: 'Product created', type: 'success' });
       setForm({ title: '', mrp: '', discountPercent: 0, description: '', category: '', images: { image1: '' }, product_info: { brand: '', manufacturer: '', SareeLength: '', SareeMaterial: '', SareeColor: '', IncludedComponents: '' } });
       setIsCreateModalOpen(false);
-      await load();
+      await load({ showLoading: false });
     } catch (e2) {
       setError(e2.message || 'Failed to create product');
       setToast({ show: true, text: e2.message || 'Failed to create product', type: 'error' });
@@ -85,8 +88,8 @@ const AdminProducts = () => {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
     try {
       await api.admin.deleteProduct(id);
+      setList((prev) => prev.filter((p) => p._id !== id));
       setToast({ show: true, text: 'Product deleted', type: 'success' });
-      await load();
     } catch (e) {
       setError(e.message || 'Failed to delete product');
       setToast({ show: true, text: e.message || 'Failed to delete product', type: 'error' });
@@ -135,7 +138,7 @@ const AdminProducts = () => {
         discountPercent: Number(editForm.discountPercent) || 0
       });
       setToast({ show: true, text: 'Product updated', type: 'success' });
-      await load();
+      await load({ showLoading: false });
       closeEditModal();
     } catch (e) {
       setError(e.message || 'Failed to update product');
@@ -154,17 +157,81 @@ const AdminProducts = () => {
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [filterCategory, setFilterCategory] = useState('');
+  const [filterSubcategory, setFilterSubcategory] = useState('');
+  const [filterSort, setFilterSort] = useState('newest');
+  const [filterType, setFilterType] = useState('');
+
+  const selectedCategory = useMemo(
+    () => CATEGORIES.find((c) => (c.name || '').trim() === (filterCategory || '').trim()),
+    [filterCategory]
+  );
+  const subcategoriesForDropdown = useMemo(
+    () => (selectedCategory?.subcategories || []),
+    [selectedCategory]
+  );
+
+  const uniqueTypes = useMemo(() => {
+    const set = new Set();
+    (list || []).forEach(p => {
+      const info = p.product_info || {};
+      const t = info.shoeType || info.watchType || info.watchBrand || info.brand || '';
+      const s = (typeof t === 'string' ? t : '').trim();
+      if (s) set.add(s);
+    });
+    return ['', ...Array.from(set).sort()];
+  }, [list]);
+
   const filtered = useMemo(() => {
+    let arr = list || [];
     const q = query.trim().toLowerCase();
-    const arr = q ? list.filter(p => (p.title || '').toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q)) : list;
+    if (q) {
+      arr = arr.filter(p =>
+        (p.title || '').toLowerCase().includes(q) ||
+        (p.category || '').toLowerCase().includes(q)
+      );
+    }
+    if (filterCategory) {
+      const cat = CATEGORIES.find((c) => (c.name || '').trim().toLowerCase() === filterCategory.trim().toLowerCase());
+      const subNames = (cat?.subcategories || []).map((s) => (s.name || '').trim().toLowerCase());
+      const matchNames = [filterCategory.trim().toLowerCase(), ...subNames];
+      arr = arr.filter((p) => matchNames.includes((p.category || '').trim().toLowerCase()));
+    }
+    if (filterSubcategory) {
+      arr = arr.filter((p) => (p.category || '').trim().toLowerCase() === filterSubcategory.trim().toLowerCase());
+    }
+    if (filterType) {
+      arr = arr.filter((p) => {
+        const info = p.product_info || {};
+        const t = (info.shoeType || info.watchType || info.watchBrand || info.brand || '').toString().toLowerCase();
+        return t === filterType.toLowerCase();
+      });
+    }
+    if (filterSort === 'newest') {
+      arr = [...arr].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    } else if (filterSort === 'oldest') {
+      arr = [...arr].sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+    }
     return arr;
-  }, [list, query]);
+  }, [list, query, filterCategory, filterSubcategory, filterSort, filterType]);
+
   const totalPages = Math.max(1, Math.ceil((filtered.length || 0) / pageSize));
   const pageItems = useMemo(() => {
     const start = (page - 1) * pageSize;
     return filtered.slice(start, start + pageSize);
   }, [filtered, page, pageSize]);
-  useEffect(() => { setPage(1); }, [query, pageSize]);
+
+  const hasActiveFilters = filterCategory || filterSubcategory || filterSort !== 'newest' || filterType;
+  const clearFilters = () => {
+    setFilterCategory('');
+    setFilterSubcategory('');
+    setFilterSort('newest');
+    setFilterType('');
+    setQuery('');
+    setPage(1);
+  };
+
+  useEffect(() => { setPage(1); }, [query, pageSize, filterCategory, filterSubcategory, filterSort, filterType]);
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -184,14 +251,43 @@ const AdminProducts = () => {
             </button>
           </div>
           <div className="p-4 flex flex-col flex-1 min-h-0">
-            <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between pb-4 border-b border-slate-100">
-              <input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="Search by title or category" className="w-full sm:max-w-xs border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 outline-none" />
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-600">Rows</span>
-                <select className="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 outline-none" value={pageSize} onChange={(e)=>setPageSize(Number(e.target.value))}>
-                  <option value={5}>5</option>
-                  <option value={10}>10</option>
-                  <option value={20}>20</option>
+            <div className="flex flex-col gap-4 pb-4 border-b border-slate-100">
+              <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+                <input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="Search by title or category" className="w-full sm:max-w-xs border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 outline-none" />
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm text-slate-600">Rows</span>
+                  <select className="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 outline-none" value={pageSize} onChange={(e)=>setPageSize(Number(e.target.value))}>
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                  </select>
+                  {hasActiveFilters && (
+                    <button type="button" onClick={clearFilters} className="px-3 py-2 text-sm font-medium text-teal-700 bg-teal-50 border border-teal-200 rounded-xl hover:bg-teal-100">
+                      Clear all filters
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <select className="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 outline-none min-w-[140px]" value={filterCategory} onChange={(e)=>{ setFilterCategory(e.target.value); setFilterSubcategory(''); }}>
+                  <option value="">Category: All</option>
+                  {CATEGORIES.map((c) => (
+                    <option key={c.name} value={(c.name || '').trim()}>{(c.name || '').trim()}</option>
+                  ))}
+                </select>
+                <select className="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 outline-none min-w-[140px]" value={filterSubcategory} onChange={(e)=>setFilterSubcategory(e.target.value)}>
+                  <option value="">Subcategory: All</option>
+                  {subcategoriesForDropdown.map((s) => (
+                    <option key={s.name} value={(s.name || '').trim()}>{(s.name || '').trim()}</option>
+                  ))}
+                </select>
+                <select className="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 outline-none min-w-[140px]" value={filterSort} onChange={(e)=>setFilterSort(e.target.value)}>
+                  <option value="newest">Newest added</option>
+                  <option value="oldest">Oldest added</option>
+                </select>
+                <select className="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 outline-none min-w-[140px]" value={filterType} onChange={(e)=>setFilterType(e.target.value)}>
+                  <option value="">Type: All</option>
+                  {uniqueTypes.filter(Boolean).map(t => <option key={t} value={t}>Type: {t}</option>)}
                 </select>
               </div>
             </div>

@@ -38,15 +38,19 @@ const Layout = () => {
   }, []);
 
   useEffect(() => {
+    const SCROLL_THRESHOLD = 20;
     const handleScroll = () => {
       if (window.innerWidth < 768) return;
       const y = window.scrollY;
+      const delta = y - lastScrollY.current;
       if (y < 60) {
         setShowSecondaryNav(true);
-      } else if (y > lastScrollY.current) {
-        setShowSecondaryNav(false);
-      } else {
+      } else if (Math.abs(delta) < SCROLL_THRESHOLD) {
+        return;
+      } else if (delta > 0) {
         setShowSecondaryNav(true);
+      } else {
+        setShowSecondaryNav(false);
       }
       lastScrollY.current = y;
     };

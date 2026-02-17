@@ -188,7 +188,7 @@ const TickNTrackSections = () => {
                 onMouseLeave={() => setHoveredCard(null)}
                 className="group flex flex-col items-center cursor-pointer"
               >
-                <div className="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 bg-gray-100">
+                <div className="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 bg-gray-100 aspect-square">
                   <img
                     src={category.image}
                     alt={category.name}

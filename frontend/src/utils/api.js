@@ -155,6 +155,7 @@ export const api = {
     createProduct: (payload) => request('/api/admin/products', { method: 'POST', body: JSON.stringify(payload) }),
     updateProduct: (id, payload) => request(`/api/admin/products/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
     listProducts: () => request('/api/admin/products', { method: 'GET' }),
+    listCategories: () => request('/api/admin/categories', { method: 'GET' }),
     deleteProduct: (id) => request(`/api/admin/products/${id}`, { method: 'DELETE' }),
     listOrders: () => request('/api/admin/orders', { method: 'GET' }),
     listAddresses: () => request('/api/admin/addresses', { method: 'GET' }),

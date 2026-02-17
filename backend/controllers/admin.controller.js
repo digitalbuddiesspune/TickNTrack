@@ -2,6 +2,7 @@ import { Product } from '../models/product.js';
 import Order from '../models/Order.js';
 import User from '../models/User.js';
 import { Address } from '../models/Address.js';
+import { Category } from '../models/Category.js';
 
 export async function createProduct(req, res) {
   try {
@@ -97,6 +98,21 @@ export async function adminListProducts(req, res) {
     return res.json(products);
   } catch (err) {
     return res.status(500).json({ message: 'Failed to list products', error: err.message });
+  }
+}
+
+/** GET /api/admin/categories - List all categories from Category model (for filters). Returns parents and subcategories. */
+export async function adminListCategories(req, res) {
+  try {
+    const categories = await Category.find({})
+      .select('name slug parentId _id')
+      .sort({ sortOrder: 1, name: 1 })
+      .lean();
+    const parents = categories.filter((c) => !c.parentId);
+    const subcategories = categories.filter((c) => c.parentId);
+    return res.json({ parents, subcategories, all: categories });
+  } catch (err) {
+    return res.status(500).json({ message: 'Failed to list categories', error: err.message });
   }
 }
 

@@ -1,9 +1,12 @@
 import { Router } from 'express';
 import auth from '../middleware/auth.js';
 import adminOnly from '../middleware/admin.js';
-import { createProduct, adminListProducts, deleteProductById, adminListOrders, adminStats, adminListAddresses, updateProduct, updateOrderStatus } from '../controllers/admin.controller.js';
+import { createProduct, adminListProducts, deleteProductById, adminListOrders, adminStats, adminListAddresses, updateProduct, updateOrderStatus, adminListCategories } from '../controllers/admin.controller.js';
 
 const router = Router();
+
+// Categories (for admin filters – from Category model)
+router.get('/categories', auth, adminOnly, adminListCategories);
 
 // Products
 router.post('/products', auth, adminOnly, createProduct);
