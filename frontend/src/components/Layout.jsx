@@ -37,7 +37,7 @@ const Layout = () => {
 
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ '--app-header-height': `${headerHeight}px` }}>
+    <div className="flex flex-col min-h-screen pb-16 md:pb-0" style={{ '--app-header-height': `${headerHeight}px` }}>
       {/* Navbar - Fixed at top */}
       <div ref={headerWrapRef} className="fixed top-0 left-0 right-0 z-[9999] bg-gradient-to-br from-gray-50 via-teal-50/30 to-cyan-50/30 transition-[height] duration-200" style={{ overflow: 'visible' }}>
         <Navbar />

@@ -172,16 +172,14 @@ const Footer = () => {
       <div className="border-t border-gray-800">
         <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-4 2xl:px-6 py-6">
           <div className="flex flex-col gap-4 items-center">
-            <div className="text-gray-400 text-sm text-center whitespace-nowrap">
+            <div className="text-gray-400 text-xs sm:text-sm text-center max-w-full">
               © {currentYear} TickNTrack by WING FUSION ECOMMERCE PRIVATE LIMITED. All rights reserved.
             </div>
-            <div className="flex flex-nowrap gap-4 md:gap-6 justify-end w-full">
-              <Link to="/terms-and-conditions" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300 whitespace-nowrap">Terms & Conditions</Link>
-              <Link to="/privacy-policy" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300 whitespace-nowrap">Privacy Policy</Link>
-              <Link to="/shipping-policy" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300 whitespace-nowrap">Shipping Policy</Link>
-              <Link to="/refund-cancellation-policy" className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-300 whitespace-nowrap">
-                Refund & Cancellation Policy
-              </Link>
+            <div className="flex flex-wrap gap-3 sm:gap-4 md:gap-6 justify-center md:justify-end w-full">
+              <Link to="/terms-and-conditions" className="text-gray-400 hover:text-teal-400 text-xs sm:text-sm transition-colors duration-300">Terms & Conditions</Link>
+              <Link to="/privacy-policy" className="text-gray-400 hover:text-teal-400 text-xs sm:text-sm transition-colors duration-300">Privacy Policy</Link>
+              <Link to="/shipping-policy" className="text-gray-400 hover:text-teal-400 text-xs sm:text-sm transition-colors duration-300">Shipping Policy</Link>
+              <Link to="/refund-cancellation-policy" className="text-gray-400 hover:text-teal-400 text-xs sm:text-sm transition-colors duration-300">Refund & Cancellation Policy</Link>
             </div>
           </div>
         </div>
