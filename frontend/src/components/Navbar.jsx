@@ -486,14 +486,6 @@ const Navbar = () => {
                 HOME
               </Link>
               <Link
-                to="/collections"
-                className={`relative px-3 py-2 font-medium text-sm uppercase transition-colors rounded-md ${
-                  isActive('/collections') ? 'text-gray-900 bg-white/70 shadow-sm' : 'text-gray-700 hover:text-gray-900 hover:bg-white/50'
-                }`}
-              >
-                COLLECTIONS
-              </Link>
-              <Link
                 to="/about-us"
                 className={`relative px-3 py-2 font-medium text-sm uppercase transition-colors rounded-md ${
                   isActive('/about-us') ? 'text-gray-900 bg-white/70 shadow-sm' : 'text-gray-700 hover:text-gray-900 hover:bg-white/50'
