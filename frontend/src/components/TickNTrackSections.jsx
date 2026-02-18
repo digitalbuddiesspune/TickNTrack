@@ -16,39 +16,49 @@ const TickNTrackSections = () => {
   const CACHE_KEY = 'tickntrack_top_selling_products';
   const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
 
-  // Load cached data on mount (skip if localStorage blocked e.g. Tracking Prevention)
+  // Load cached data on mount
   useEffect(() => {
     try {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
         const { data, timestamp } = JSON.parse(cached);
         const now = Date.now();
+        // Use cache if less than 5 minutes old
         if (now - timestamp < CACHE_DURATION) {
           setCategoryProducts(data);
-          return;
+          console.log('Loaded top selling products from cache');
+          return; // Don't fetch if cache is valid
+        } else {
+          // Cache expired, remove it
+          localStorage.removeItem(CACHE_KEY);
         }
-        try { localStorage.removeItem(CACHE_KEY); } catch {}
       }
-    } catch {
-      // Cache read failed - will fetch below
+    } catch (e) {
+      console.log('Cache read error:', e);
     }
   }, []);
 
   // Load top selling products for each category - Progressive loading with cache
   useEffect(() => {
     const loadCategoryProducts = async (category) => {
+      // Check cache first
       try {
         const cached = localStorage.getItem(CACHE_KEY);
         if (cached) {
           const { data, timestamp } = JSON.parse(cached);
           const now = Date.now();
-          if (now - timestamp < CACHE_DURATION && data?.[category.name]) {
-            setCategoryProducts(prev => ({ ...prev, [category.name]: data[category.name] }));
+          if (now - timestamp < CACHE_DURATION && data[category.name]) {
+            // Use cached data for this category
+            setCategoryProducts(prev => ({
+              ...prev,
+              [category.name]: data[category.name]
+            }));
+            console.log(`Loaded ${data[category.name].length} products for ${category.name} from cache`);
             return;
           }
         }
-      } catch {
-        // Cache blocked or invalid - proceed to fetch
+      } catch (e) {
+        // Continue to fetch
       }
 
       try {
@@ -120,15 +130,22 @@ const TickNTrackSections = () => {
             [category.name]: topProducts
           };
           
+          // Update cache
           try {
-            localStorage.setItem(CACHE_KEY, JSON.stringify({ data: updated, timestamp: Date.now() }));
-          } catch {
-            // Cache write failed (e.g. blocked)
+            localStorage.setItem(CACHE_KEY, JSON.stringify({
+              data: updated,
+              timestamp: Date.now()
+            }));
+          } catch (e) {
+            console.log('Cache write error:', e);
           }
           
           return updated;
         });
-      } catch {
+        
+        console.log(`Loaded ${topProducts.length} products for ${category.name}`);
+      } catch (err) {
+        console.error(`Error loading products for ${category.name}:`, err);
         setCategoryProducts(prev => ({
           ...prev,
           [category.name]: []
