@@ -68,15 +68,11 @@ export const fetchProducts = async (category, subcategory = null) => {
       params.category = category;
     }
     
-    console.log("Fetching products from:", `${API_URL}/products`, params);
-
     const response = await apiClient.get('/products', { params });
     const data = response.data;
-    console.log("Products fetched:", data?.length || 0);
     return Array.isArray(data) ? data : [];
   } catch (error) {
-    console.error("Error fetching products:", error);
-    // Return empty array instead of throwing error so page still loads
+    // Return empty array so page still loads
     return [];
   }
 };

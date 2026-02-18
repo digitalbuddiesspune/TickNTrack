@@ -373,67 +373,65 @@ const ProductList = ({ defaultCategory } = {}) => {
   
   // Fetch products with cache
   useEffect(() => {
+    const controller = new AbortController();
+    let cancelled = false;
+
     const load = async () => {
-      // Create cache key based on category and subcategory
       const cacheKey = `tickntrack_category_${effectiveCategory || 'all'}_${effectiveSubCategory || 'none'}`;
-      
-      // Check cache first
+
+      // Check cache first (skip if localStorage blocked e.g. Tracking Prevention)
       try {
         const cached = localStorage.getItem(cacheKey);
         if (cached) {
           const { data, timestamp } = JSON.parse(cached);
           const now = Date.now();
-          // Use cache if less than 5 minutes old
           if (now - timestamp < CACHE_DURATION) {
             setProducts(Array.isArray(data) ? data : []);
             setFilteredProducts(Array.isArray(data) ? data : []);
             setLoading(false);
-            console.log(`Loaded products from cache for ${effectiveCategory}${effectiveSubCategory ? '/' + effectiveSubCategory : ''}`);
-            return; // Don't fetch if cache is valid
-          } else {
-            // Cache expired, remove it
-            localStorage.removeItem(cacheKey);
+            return;
           }
+          try { localStorage.removeItem(cacheKey); } catch {}
         }
-      } catch (e) {
-        console.log('Cache read error:', e);
+      } catch {
+        // Cache read failed (e.g. blocked) - proceed to fetch
       }
-      
+
       try {
         setLoading(true);
         setError(null);
-        // Clear products immediately when category changes
         setProducts([]);
         setFilteredProducts([]);
-        setDisplayCount(20); // Reset to initial 20 products when category changes
-        
-        // Use subcategory if available, otherwise use category
+        setDisplayCount(20);
+
         const data = await fetchProducts(effectiveCategory, effectiveSubCategory || null);
+        if (cancelled) return;
+
         const productsArray = Array.isArray(data) ? data : [];
-        
         setProducts(productsArray);
         setFilteredProducts(productsArray);
-        
-        // Update cache
+
         try {
-          localStorage.setItem(cacheKey, JSON.stringify({
-            data: productsArray,
-            timestamp: Date.now()
-          }));
-        } catch (e) {
-          console.log('Cache write error:', e);
+          localStorage.setItem(cacheKey, JSON.stringify({ data: productsArray, timestamp: Date.now() }));
+        } catch {
+          // Cache write failed - ignore
         }
       } catch (err) {
-        console.error('Failed to load products:', err);
+        if (cancelled) return;
         setError('Failed to load products. Please try again later.');
         setProducts([]);
         setFilteredProducts([]);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     load();
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
   }, [effectiveCategory, effectiveSubCategory]);
   
   // Load wishlist
