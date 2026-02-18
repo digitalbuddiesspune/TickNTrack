@@ -60,6 +60,17 @@ const CartIcon = ({ isActive }) => (
   </svg>
 );
 
+const MenuIcon = ({ isActive }) => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 6h16M4 12h16M4 18h16" 
+      stroke={isActive ? '#800020' : 'black'} 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 const AccountIcon = ({ isActive }) => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" 
@@ -163,15 +174,16 @@ const MobileBottomNav = () => {
           <span className="text-[10px] mt-0.5">CART</span>
         </Link>
         
-        <Link 
-          to="/profile" 
-          className={`flex flex-col items-center justify-center ${isActive('/profile') ? 'text-[#800020]' : 'text-gray-700'} transition-all duration-300 flex-1 group`}
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new CustomEvent('toggleMobileMenu'))}
+          className="flex flex-col items-center justify-center text-gray-700 hover:text-[#800020] transition-all duration-300 flex-1 group"
         >
-          <div className={`p-1 rounded-full ${isActive('/profile') ? 'bg-gray-100' : 'group-hover:bg-gray-100'} transition-all duration-300`}>
-            <AccountIcon isActive={isActive('/profile')} />
+          <div className="p-1 rounded-full group-hover:bg-gray-100 transition-all duration-300">
+            <MenuIcon isActive={false} />
           </div>
-          <span className="text-[10px] mt-0.5">ACCOUNT</span>
-        </Link>
+          <span className="text-[10px] mt-0.5">CATEGORIES</span>
+        </button>
       </div>
     </div>
   );

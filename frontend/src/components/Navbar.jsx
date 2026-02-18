@@ -94,6 +94,12 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
+  useEffect(() => {
+    const onToggle = () => setIsMobileMenuOpen((prev) => !prev);
+    window.addEventListener('toggleMobileMenu', onToggle);
+    return () => window.removeEventListener('toggleMobileMenu', onToggle);
+  }, []);
+
   const handleLogin = () => {
     navigate('/signin');
   };
@@ -607,25 +613,17 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Mobile menu button */}
+            {/* Profile/Account icon (mobile) - swapped with hamburger in bottom nav */}
             <div className="flex items-center md:hidden">
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              <Link
+                to="/profile"
                 className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2"
-                aria-expanded={isMobileMenuOpen}
-                aria-controls="mobile-menu"
+                aria-label="Account"
               >
-                <span className="sr-only">Open main menu</span>
-                {isMobileMenuOpen ? (
-                  <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                ) : (
-                  <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                )}
-              </button>
+                <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </Link>
             </div>
           </div>
         </div>
@@ -635,8 +633,20 @@ const Navbar = () => {
           <div id="mobile-menu" className="md:hidden border-t border-gray-200 bg-gradient-to-br from-gray-50 via-teal-50/40 to-cyan-50/40 shadow-lg relative z-[70] max-h-[calc(100vh-120px)] overflow-y-auto">
             <div className="py-4">
               {/* Categories Section in Mobile Menu */}
-              <div className="mt-4 pt-4 px-4 border-t border-gray-200">
-                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-4">CATEGORIES</div>
+              <div className="pt-2 px-4 border-t border-gray-200">
+                <div className="flex items-center justify-between mb-3 px-0">
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">CATEGORIES</span>
+                  <button
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-1.5 py-1.5 px-3 text-gray-600 hover:text-gray-900 hover:bg-gray-200/80 rounded-md transition-colors text-xs font-medium"
+                    aria-label="Close"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Close
+                  </button>
+                </div>
                 <nav className="flex flex-col space-y-1" aria-label="Mobile categories">
                   {CATEGORIES.map((cat) => (
                     <div key={cat.name} className="border border-gray-200 rounded-lg overflow-hidden bg-white/60">
@@ -674,23 +684,6 @@ const Navbar = () => {
                 </nav>
               </div>
 
-              {/* Auth Section in Mobile Menu */}
-              {!isAuthenticated && (
-                <div className="mt-6 pt-6 px-4 border-t border-gray-200">
-                  <button
-                    onClick={() => {
-                      handleLogin();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-gray-800 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors duration-200"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                    </svg>
-                    <span>Sign In</span>
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         )}
