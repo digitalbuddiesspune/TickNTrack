@@ -130,87 +130,112 @@ export const getProducts = async (req, res) => {
   try {
     // Accept either `subcategory` (preferred) or `category` query param
     const rawCategory = (req.query.subcategory || req.query.category || '').toString();
+    const isSubcategory = !!req.query.subcategory; // Track if this is a subcategory request
     // normalize slug-like values (e.g., "soft-silk" -> "soft silk") and trim
     const category = rawCategory.replace(/-/g, ' ').trim();
     let query = {};
 
     console.log('Received request with query params:', req.query);
+    console.log('Is subcategory request:', isSubcategory, 'Category:', category);
 
     if (category) {
       // Normalize category name to handle variations
       const normalizedCategory = normalizeCategoryName(category);
       
-      // Use word boundaries to ensure exact matching and prevent cross-contamination
       // Escape special regex characters in category name
       const escapedCategory = escapeRegex(category);
       const escapedNormalized = escapeRegex(normalizedCategory);
       
-      // Use word boundary regex to match exact category names
-      // This prevents "Men Watches" from matching "Women Watches"
-      const re = new RegExp(`^${escapedCategory}$|\\b${escapedCategory}\\b`, 'i');
-      const normalizedRe = normalizedCategory !== category ? new RegExp(`^${escapedNormalized}$|\\b${escapedNormalized}\\b`, 'i') : null;
+      // For subcategories, prioritize exact matching first
+      // For categories, use word boundaries to prevent cross-contamination
+      const exactRe = new RegExp(`^${escapedCategory}$`, 'i');
+      const exactNormalizedRe = normalizedCategory !== category ? new RegExp(`^${escapedNormalized}$`, 'i') : null;
+      const wordBoundaryRe = new RegExp(`^${escapedCategory}$|\\b${escapedCategory}\\b`, 'i');
+      const wordBoundaryNormalizedRe = normalizedCategory !== category ? new RegExp(`^${escapedNormalized}$|\\b${escapedNormalized}\\b`, 'i') : null;
       
-      const orConditions = [
-        { 'category.name': { $regex: re } },
-        { 'category': { $regex: re } },
-        { 'category.slug': { $regex: re } },
-        { 'subcategory': { $regex: re } },
-        { 'tags': { $regex: re } }
-      ];
-
-      // Also add normalized category regex if different
-      if (normalizedRe) {
+      const orConditions = [];
+      
+      // If this is a subcategory request, prioritize exact matching
+      if (isSubcategory) {
+        // Exact match first (most specific)
         orConditions.push(
-          { 'category.name': { $regex: normalizedRe } },
-          { 'category': { $regex: normalizedRe } },
-          { 'subcategory': { $regex: normalizedRe } }
+          { 'category': exactRe },
+          { 'category.name': exactRe },
+          { 'subcategory': exactRe }
         );
-      }
-
-      // If this is a parent category, also search for all its subcategories
-      if (PARENT_TO_SUBCATEGORIES[normalizedCategory]) {
-        PARENT_TO_SUBCATEGORIES[normalizedCategory].forEach((sub) => {
-          const escapedSub = escapeRegex(sub);
-          const subRe = new RegExp(`^${escapedSub}$|\\b${escapedSub}\\b`, 'i');
-          orConditions.push({ category: subRe });
-          orConditions.push({ 'category.name': subRe });
-          orConditions.push({ subcategory: subRe });
-        });
-        console.log(`Including subcategories for parent category "${normalizedCategory}":`, PARENT_TO_SUBCATEGORIES[normalizedCategory]);
-      }
-
-      // Also check if the original (non-normalized) category is a parent
-      if (PARENT_TO_SUBCATEGORIES[category]) {
-        PARENT_TO_SUBCATEGORIES[category].forEach((sub) => {
-          const escapedSub = escapeRegex(sub);
-          const subRe = new RegExp(`^${escapedSub}$|\\b${escapedSub}\\b`, 'i');
-          orConditions.push({ category: subRe });
-          orConditions.push({ 'category.name': subRe });
-          orConditions.push({ subcategory: subRe });
-        });
-      }
-
-      // Also check if it matches any subcategory name directly (e.g., "Women Heels")
-      // This allows direct subcategory matching
-      Object.keys(PARENT_TO_SUBCATEGORIES).forEach((parent) => {
-        if (PARENT_TO_SUBCATEGORIES[parent].some(sub => 
-          sub.toLowerCase() === category.toLowerCase() || 
-          category.toLowerCase() === sub.toLowerCase()
-        )) {
-          // This is a subcategory, make sure we search for it with exact matching
-          const escapedSub = escapeRegex(category);
-          const subRe = new RegExp(`^${escapedSub}$|\\b${escapedSub}\\b`, 'i');
-          orConditions.push({ category: subRe });
-          orConditions.push({ 'category.name': subRe });
+        
+        if (exactNormalizedRe) {
+          orConditions.push(
+            { 'category': exactNormalizedRe },
+            { 'category.name': exactNormalizedRe },
+            { 'subcategory': exactNormalizedRe }
+          );
         }
-      });
-
-      if (CATEGORY_GROUPS[category]) {
-        CATEGORY_GROUPS[category].forEach((sub) => {
-          const escapedSub = escapeRegex(sub);
-          const subRe = new RegExp(`^${escapedSub}$|\\b${escapedSub}\\b`, 'i');
-          orConditions.push({ category: { $regex: subRe } });
+        
+        // Also check if it's a known subcategory from PARENT_TO_SUBCATEGORIES
+        Object.keys(PARENT_TO_SUBCATEGORIES).forEach((parent) => {
+          if (PARENT_TO_SUBCATEGORIES[parent].some(sub => 
+            sub.toLowerCase() === category.toLowerCase()
+          )) {
+            // This is a known subcategory, use exact match
+            const escapedSub = escapeRegex(category);
+            const subExactRe = new RegExp(`^${escapedSub}$`, 'i');
+            orConditions.push(
+              { 'category': subExactRe },
+              { 'category.name': subExactRe },
+              { 'subcategory': subExactRe }
+            );
+          }
         });
+      } else {
+        // For category requests, use word boundary matching
+        orConditions.push(
+          { 'category.name': wordBoundaryRe },
+          { 'category': wordBoundaryRe },
+          { 'category.slug': wordBoundaryRe },
+          { 'subcategory': wordBoundaryRe },
+          { 'tags': wordBoundaryRe }
+        );
+
+        // Also add normalized category regex if different
+        if (wordBoundaryNormalizedRe) {
+          orConditions.push(
+            { 'category.name': wordBoundaryNormalizedRe },
+            { 'category': wordBoundaryNormalizedRe },
+            { 'subcategory': wordBoundaryNormalizedRe }
+          );
+        }
+
+        // If this is a parent category, also search for all its subcategories
+        if (PARENT_TO_SUBCATEGORIES[normalizedCategory]) {
+          PARENT_TO_SUBCATEGORIES[normalizedCategory].forEach((sub) => {
+            const escapedSub = escapeRegex(sub);
+            const subRe = new RegExp(`^${escapedSub}$`, 'i');
+            orConditions.push({ category: subRe });
+            orConditions.push({ 'category.name': subRe });
+            orConditions.push({ subcategory: subRe });
+          });
+          console.log(`Including subcategories for parent category "${normalizedCategory}":`, PARENT_TO_SUBCATEGORIES[normalizedCategory]);
+        }
+
+        // Also check if the original (non-normalized) category is a parent
+        if (PARENT_TO_SUBCATEGORIES[category]) {
+          PARENT_TO_SUBCATEGORIES[category].forEach((sub) => {
+            const escapedSub = escapeRegex(sub);
+            const subRe = new RegExp(`^${escapedSub}$`, 'i');
+            orConditions.push({ category: subRe });
+            orConditions.push({ 'category.name': subRe });
+            orConditions.push({ subcategory: subRe });
+          });
+        }
+
+        if (CATEGORY_GROUPS[category]) {
+          CATEGORY_GROUPS[category].forEach((sub) => {
+            const escapedSub = escapeRegex(sub);
+            const subRe = new RegExp(`^${escapedSub}$`, 'i');
+            orConditions.push({ category: { $regex: subRe } });
+          });
+        }
       }
 
       query = { $or: orConditions };
@@ -218,26 +243,7 @@ export const getProducts = async (req, res) => {
       console.log('Search query:', JSON.stringify(query, null, 2));
     }
 
-    // Get all products (for debugging)
-    const allProducts = await Product.find({});
-    console.log(`Total products in database: ${allProducts.length}`);
-    
-    if (allProducts.length > 0) {
-      console.log('Sample product:', {
-        _id: allProducts[0]._id,
-        title: allProducts[0].title,
-        category: allProducts[0].category,
-        price: allProducts[0].price
-      });
-      
-      // Log all unique categories in the database
-      const categories = [...new Set(allProducts.map(p => 
-        p.category ? (typeof p.category === 'string' ? p.category : p.category.name) : 'None'
-      ))];
-      console.log('All categories in database:', categories);
-    }
-
-    // Execute the query
+    // Execute the query directly - removed unnecessary full database fetch for performance
     let products = await Product.find(query);
     console.log(`Found ${products.length} matching products`);
 

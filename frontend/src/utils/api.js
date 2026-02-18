@@ -90,41 +90,12 @@ export const api = {
   }),
 
   me: async () => {
-    try {
-      // Use credentials: 'include' to send cookies for Google OAuth
-      // Also send Authorization header if token exists (for email/password login)
-      const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-      const isCookieSession = token === 'cookie';
-      
-      console.log('[api.me] Token check:', { 
-        hasToken: !!token, 
-        isCookieSession, 
-        tokenPreview: token ? token.substring(0, 20) + '...' : 'none' 
-      });
-      
-      const options = {
-        method: 'GET',
-        credentials: 'include', // Always include credentials for cookies
-      };
-      
-      // If not cookie session, explicitly add Authorization header
-      // This will be preserved by request() function since we check !headers.Authorization
-      if (!isCookieSession && token) {
-        options.headers = {
-          Authorization: `Bearer ${token}`,
-        };
-        console.log('[api.me] Added Authorization header for email/password login');
-      }
-      
-      const result = await request('/api/me', options);
-      console.log('[api.me] Success, user data:', result?.user ? 'received' : 'missing');
-      return result;
-    } catch (e) {
-      console.error('api.me() error:', e);
-      // Fallback for older APIs
-      const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-      const isCookieSession = token === 'cookie';
-      
+    // Try /api/auth/me first (more reliable route)
+    // Fallback to /api/me if needed
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const isCookieSession = token === 'cookie';
+    
+    const buildOptions = () => {
       const options = {
         method: 'GET',
         credentials: 'include',
@@ -135,8 +106,36 @@ export const api = {
           Authorization: `Bearer ${token}`,
         };
       }
-      
-      return await request('/api/auth/me', options);
+      return options;
+    };
+    
+    // Try /api/auth/me first (standard route)
+    try {
+      const result = await Promise.race([
+        request('/api/auth/me', buildOptions()),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Request timeout')), 8000)
+        )
+      ]);
+      if (result?.user) {
+        return result;
+      }
+    } catch (e) {
+      console.log('[api.me] /api/auth/me failed, trying /api/me:', e.message);
+    }
+    
+    // Fallback to /api/me
+    try {
+      const result = await Promise.race([
+        request('/api/me', buildOptions()),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Request timeout')), 8000)
+        )
+      ]);
+      return result;
+    } catch (e) {
+      console.error('[api.me] Both routes failed:', e);
+      throw e;
     }
   },
 

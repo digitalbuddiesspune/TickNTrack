@@ -8,6 +8,7 @@ export default function Profile() {
   const [user, setUser] = useState({ firstName: '', lastName: '', email: '', mobile: '' });
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [addresses, setAddresses] = useState([]);
   const [loadingAddresses, setLoadingAddresses] = useState(false);
   const [orders, setOrders] = useState([]);
@@ -23,7 +24,15 @@ export default function Profile() {
   const fetchUserData = async () => {
     try {
       setLoading(true);
-      const userData = await api.me();
+      setError(null); // Clear any previous errors
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 10000)
+      );
+      
+      const userDataPromise = api.me();
+      const userData = await Promise.race([userDataPromise, timeoutPromise]);
+      
       if (!userData?.user) throw new Error('No user data');
       const fullName = userData.user?.name || '';
       const parts = fullName.trim().split(/\s+/);
@@ -35,7 +44,15 @@ export default function Profile() {
       });
       setIsAdmin(userData.user?.isAdmin || localStorage.getItem('auth_is_admin') === 'true');
     } catch (e) {
-      navigate('/signin');
+      console.error('Error fetching user data:', e);
+      // Only redirect if it's an auth error (401), not a timeout
+      if (e.message?.includes('timeout') || e.status === 408) {
+        setError('Loading is taking too long. Please refresh the page or check your connection.');
+      } else if (e.status === 401 || e.message?.includes('auth') || e.message?.includes('token')) {
+        navigate('/signin');
+      } else {
+        setError('Failed to load profile. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -102,8 +119,26 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-4">
         <div className="animate-spin w-10 h-10 border-2 border-teal-500 border-t-transparent rounded-full" />
+        <p className="text-gray-600 text-sm">Loading profile...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-4 px-4">
+        <p className="text-red-600 text-center">{error}</p>
+        <button
+          onClick={() => {
+            setError(null);
+            fetchUserData();
+          }}
+          className="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700"
+        >
+          Retry
+        </button>
       </div>
     );
   }
