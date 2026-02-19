@@ -80,8 +80,7 @@ const RedirectIfAuth = ({ children }) => {
 const Router = () => {
   const location = useLocation();
   const hideBottomNav = location.pathname.includes('/product/') || 
-                       location.pathname === '/products' || 
-                       location.pathname.startsWith('/category/');
+                       location.pathname === '/products';
 
   // Scroll to top on route change
   useEffect(() => {
